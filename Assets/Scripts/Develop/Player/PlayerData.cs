@@ -1,6 +1,6 @@
 ﻿
 using Develop.Save;
-using System.Diagnostics;
+using System;
 
 namespace Develop.Player
 {
@@ -10,22 +10,22 @@ namespace Develop.Player
     public class PlayerData
     {
         /// <summary>
-        /// 新規ゲーム開始時のプレイヤーデータを生成する。    
+        /// プレイヤーのデータを生成する。    
         /// </summary>
-        public PlayerData(int initialMoney)
+        /// <param name="money"> 所持金 </param>
+        public PlayerData(int money)
         {
-            Money = initialMoney;
+            if (money < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(money),
+                    "初期所持金は0以上である必要があります。");
+            }
+            Money = money;
         }
 
-        /// <summary>
-        /// セーブデータからプレイヤーデータを復元する。    
-        /// </summary>
-        public PlayerData(PlayerStatusSaveData saveData)
-        {
-            Money = saveData.Money;
-        }
 
-   　　　// プレイヤーの所持金
+        // プレイヤーの所持金
         public int Money { get; private set; }
 
         public void AddMoney(int amount)
@@ -49,15 +49,7 @@ namespace Develop.Player
             return false;
         }
 
-        /// <summary>
-        /// プレイヤーデータをセーブデータに変換する。
-        /// </summary>
-        /// <returns> セーブデータ </returns>
-        public PlayerStatusSaveData ToSaveData()
-        {
-            return new PlayerStatusSaveData(Money);
-        }
-
+       
     }
 }
 
