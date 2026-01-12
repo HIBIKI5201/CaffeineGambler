@@ -2,7 +2,7 @@
 namespace Develop.Save
 {
     /// <summary>
-    /// ゲームのセーブデータを管理するクラス。
+    /// プレイヤーのステータスセーブデータを管理するクラス。
     /// </summary>
     public class PlayerStatusSaveData 
     {
