@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerInitilize : MonoBehaviour
 {
     [SerializeField] private PlayerPresenter _playerPresenter;
-    [SerializeField] private PlayerViwer _playerViwer;
+    [SerializeField] private PlayerViewer _playerViewer;
     [SerializeField] private int _initialMoney = 1000;
 
     private PlayerData _playerData;
@@ -12,7 +12,7 @@ public class PlayerInitilize : MonoBehaviour
     private void Awake()
     {
         _playerData = new PlayerData(_initialMoney);
-        _playerPresenter.Init(_playerData, _playerViwer);
+        _playerPresenter.Init(_playerData, _playerViewer);
     }
 
     private void OnDestroy()

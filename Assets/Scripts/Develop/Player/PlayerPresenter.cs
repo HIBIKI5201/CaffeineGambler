@@ -7,16 +7,16 @@ public class PlayerPresenter : MonoBehaviour, IPointerClickHandler
 {
     private CompositeDisposable _disposables;
     private PlayerData _playerData;
-    private PlayerViwer _playerViwer;
+    private PlayerViewer _playerViewer;
 
-    public void Init(PlayerData playerData, PlayerViwer playerViwer)
+    public void Init(PlayerData playerData, PlayerViewer playerViwer)
     {
         _disposables = new CompositeDisposable();
         _playerData = playerData;
-        _playerViwer = playerViwer;
+        _playerViewer = playerViwer;
 
         _playerData.Money
-            .Subscribe(money => _playerViwer.SetCount(money))
+            .Subscribe(money => _playerViewer.SetCount(money))
             .AddTo(_disposables);
     }
 
