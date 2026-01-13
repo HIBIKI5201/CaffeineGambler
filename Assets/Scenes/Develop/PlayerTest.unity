@@ -549,6 +549,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32b284c9cca19b54fae37185cf12aa49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInitilize
+  _playerPresenter: {fileID: 5731040}
+  _playerViwer: {fileID: 5731039}
+  _initialMoney: 0
 --- !u!4 &1428418423
 Transform:
   m_ObjectHideFlags: 0
