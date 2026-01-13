@@ -1,41 +1,62 @@
-﻿using Develop.Player;
+﻿using UnityEngine;
+using Develop.Player;
 using UniRx;
-using UnityEngine;
 namespace Develop.Gambling.Develop
 {
     /// <summary>
     /// ギャンブルシステムの初期化を行うクラス。
-    /// 依存性の注入(DI)を担当する。
+    /// ScriptableObject を含む依存関係の注入(DI)を担当する。
     /// </summary>
     public class GamblingInitialize : MonoBehaviour
     {
-        // 実際にはGameManagerやInfrastracture層から取得する想定
-        // ここではテスト用にInspectorで設定、あるいは内部生成する
         [SerializeField] private BlackJackDealer _dealer;
-        [SerializeField] private UiPresenter _uiPresenter;
+        [Header("Settings")]
         [SerializeField] private BlackJackSettings _blackJackSettings;
-        private PlayerData _playerData;
+        [SerializeField] private GamblingEconomySettings _economySettings;
+        [SerializeField] private UiPresenter _uiPresenter;
+
+        private const int InitialPlayerMoney = 1000;
+
         private void Start()
         {
-           
-            _playerData = new PlayerData(1000);
-            _playerData.Money.Subscribe(money =>
+            // 1. 設定のバリデーション
+            if (_blackJackSettings == null)
+            {
+                Debug.LogError("BlackJackSettings が設定されていません。初期化を中止します。");
+                return;
+            }
+            if (_economySettings == null)
+            {
+                Debug.LogError("GamblingEconomySettings が設定されていません。初期化を中止します。");
+                return;
+            }
+
+            // 2. 共有データの取得（シミュレート）
+            PlayerData playerData = new PlayerData(InitialPlayerMoney);
+            playerData.Money.Subscribe(money =>
             {
                 _uiPresenter.UpdateMoneyDisplay(money);
-            });
+            })
+                .AddTo(this);
+                
 
-            // 2. 各層の生成とDI
-            // 経済層
-            GamblingEconomy economy = new GamblingEconomy(_playerData);
+            // 3. 各層の生成とDI
+            // 経済層（EconomySettingsを注入）
+            GamblingEconomy economy = new GamblingEconomy(playerData, _economySettings);
             
-            // 勝負層
+            // 勝負層（BlackJackSettingsを注入）
             BlackJackLogic logic = new BlackJackLogic(_blackJackSettings);
+
+            // 入力層へ注入
+            if (_dealer == null)
+            {
+                GameObject go = new GameObject("BlackJackDealer");
+                _dealer = go.AddComponent<BlackJackDealer>();
+            }
 
             _dealer.Initialize(logic, economy);
 
-            Debug.Log("Gambling System Initialized.");
-
-          
+            Debug.Log("Gambling System Initialized with separate ScriptableObject settings.");
         }
     }
 }
