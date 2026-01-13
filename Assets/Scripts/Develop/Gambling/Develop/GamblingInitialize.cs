@@ -13,6 +13,7 @@ namespace Develop.Gambling.Develop
         // ここではテスト用にInspectorで設定、あるいは内部生成する
         [SerializeField] private BlackJackDealer _dealer;
         [SerializeField] private UiPresenter _uiPresenter;
+        [SerializeField] private BlackJackSettings _blackJackSettings;
         private PlayerData _playerData;
         private void Start()
         {
@@ -28,7 +29,7 @@ namespace Develop.Gambling.Develop
             GamblingEconomy economy = new GamblingEconomy(_playerData);
             
             // 勝負層
-            BlackJackLogic logic = new BlackJackLogic();
+            BlackJackLogic logic = new BlackJackLogic(_blackJackSettings);
 
             _dealer.Initialize(logic, economy);
 
