@@ -1,5 +1,6 @@
 ﻿
 using System;
+using UniRx;
 
 namespace Develop.Player
 {
@@ -20,16 +21,16 @@ namespace Develop.Player
                     nameof(money),
                     "初期所持金は0以上である必要があります。");
             }
-            Money = money;
+            Money.Value = money;
         }
 
 
         // プレイヤーの所持金
-        public int Money { get; private set; }
+        ReactiveProperty<int> Money = new ReactiveProperty<int>(0);
 
         public void AddMoney(int amount)
         {
-            Money += amount;
+            Money.Value += amount;
         }
 
         /// <summary>
@@ -40,9 +41,9 @@ namespace Develop.Player
         /// <reterns> 消費できたかどうか </reterns>
         public bool TrySpendMoney(int amount)
         {
-            if (Money >= amount)
+            if (Money.Value >= amount)
             {
-                Money -= amount;
+                Money.Value -= amount;
                 return true;
             }
             return false;
