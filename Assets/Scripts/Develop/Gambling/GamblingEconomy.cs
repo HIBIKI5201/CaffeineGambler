@@ -13,12 +13,12 @@ namespace Develop.Gambling
         /// コンストラクタ。
         /// </summary>
         /// <param name="playerData">プレイヤーデータへの参照</param>
-        public GamblingEconomy(PlayerData playerData)
+        /// <param name="settings">経済バランス設定</param>
+        public GamblingEconomy(PlayerData playerData, GamblingEconomySettings settings)
         {
             _playerData = playerData ?? throw new ArgumentNullException(nameof(playerData));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
         }
-
-        private readonly PlayerData _playerData;
 
         /// <summary>
         /// 賭け金を支払う。
@@ -31,12 +31,9 @@ namespace Develop.Gambling
             return _playerData.TrySpendMoney(amount);
         }
 
-        // 配当倍率
-        private const int WinMultiplier = 2;
-        private const int BlackJackMultiplier = 3;
-
         /// <summary>
         /// 勝負結果に基づいて配当を計算し、プレイヤーに付与する。
+        /// 設定された倍率に基づいて計算を行うことで、柔軟なバランス調整を可能にする。
         /// </summary>
         /// <param name="betAmount">賭けた金額</param>
         /// <param name="result">勝負の結果</param>
@@ -44,19 +41,21 @@ namespace Develop.Gambling
         {
             int returnAmount = 0;
 
-            // 結果に応じた倍率設定
-            // Loseは0倍なので処理なし
+            // ScriptableObjectから倍率を取得して計算
             switch (result)
             {
                 case GamblingResult.Draw:
-                    returnAmount = betAmount; // 返金
+                    returnAmount = betAmount * _settings.DrawMultiplier; 
                     break;
                 case GamblingResult.Win:
-                    returnAmount = betAmount * WinMultiplier; // 2倍
+                    returnAmount = betAmount * _settings.WinMultiplier;
                     break;
                 case GamblingResult.BlackJack:
-                    // 通常2.5倍だが、整数計算のため3倍とする（ボーナス要素）
-                    returnAmount = betAmount * BlackJackMultiplier; 
+                    returnAmount = betAmount * _settings.BlackJackMultiplier; 
+                    break;
+                case GamblingResult.Lose:
+                default:
+                    returnAmount = 0;
                     break;
             }
 
@@ -65,5 +64,8 @@ namespace Develop.Gambling
                 _playerData.AddMoney(returnAmount);
             }
         }
+
+        private readonly PlayerData _playerData;
+        private readonly GamblingEconomySettings _settings;
     }
 }
