@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Develop.Player;
 using UniRx;
+
 namespace Develop.Gambling.Develop
 {
     /// <summary>
-    /// ギャンブルシステムの初期化を行うクラス。
-    /// ScriptableObject を含む依存関係の注入(DI)を担当する。
+    ///     ギャンブルシステムの初期化を行うクラス。
+    ///     ScriptableObject を含む依存関係の注入(DI)を担当する。
     /// </summary>
     public class GamblingInitialize : MonoBehaviour
     {
@@ -19,7 +20,7 @@ namespace Develop.Gambling.Develop
 
         private void Start()
         {
-            // 1. 設定のバリデーション
+            // ゲームに必要な設定ファイルが存在するか確認するため
             if (_blackJackSettings == null)
             {
                 Debug.LogError("BlackJackSettings が設定されていません。初期化を中止します。");
@@ -31,32 +32,29 @@ namespace Develop.Gambling.Develop
                 return;
             }
 
-            // 2. 共有データの取得（シミュレート）
+            // プレイヤーの所持金データを生成し、UIと同期させるため
             PlayerData playerData = new PlayerData(InitialPlayerMoney);
             playerData.Money.Subscribe(money =>
             {
                 _uiPresenter.UpdateMoneyDisplay(money);
             })
-                .AddTo(this);
+            .AddTo(this);
                 
-
-            // 3. 各層の生成とDI
-            // 経済層（EconomySettingsを注入）
+            // 経済システムと計算ロジックをインスタンス化するため
             GamblingEconomy economy = new GamblingEconomy(playerData, _economySettings);
-            
-            // 勝負層（BlackJackSettingsを注入）
             BlackJackLogic logic = new BlackJackLogic(_blackJackSettings);
 
-            // 入力層へ注入
+            // ディーラーオブジェクトがシーン内に存在しない場合に自動生成するため
             if (_dealer == null)
             {
                 GameObject go = new GameObject("BlackJackDealer");
                 _dealer = go.AddComponent<BlackJackDealer>();
             }
 
+            // 生成したロジック等をディーラーに注入して初期化するため
             _dealer.Initialize(logic, economy);
-            
-            // UI層へDealerを注入
+
+            // UIがディーラーを操作できるように参照を渡すため
             _uiPresenter.SetDealer(_dealer);
 
             Debug.Log("Gambling System Initialized with separate ScriptableObject settings.");

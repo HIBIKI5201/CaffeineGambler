@@ -5,90 +5,150 @@ using TMPro;
 
 namespace Develop.Gambling.Develop
 {
+    /// <summary>
+    ///     UIの表示更新と、ユーザー入力をDealerへ伝えるプレゼンタークラス。
+    /// </summary>
     public class UiPresenter : MonoBehaviour
     {
         /// <summary>
-        /// Dealerの参照をセットする。
+        ///     Dealerの参照をセットする。
         /// </summary>
+        /// <param name="dealer">操作対象のディーラー</param>
         public void SetDealer(BlackJackDealer dealer)
         {
+            // UIからの操作をゲームロジックに伝えるための参照を保持するため
             _dealer = dealer;
         }
 
         /// <summary>
-        /// 所持金表示を更新し、ベット可能額を制限する。
+        ///     所持金表示を更新し、ベット可能額を制限する。
         /// </summary>
+        /// <param name="money">最新の所持金</param>
         public void UpdateMoneyDisplay(int money)
         {
+            // 現在の所持金を計算に利用するために保持するため
+            _currentMoney = money;
+
+            // 画面上の所持金テキストを更新するため
             if (_moneyText != null)
             {
                 _moneyText.text = $"Money: {money}";
             }
-            UpdateBetLimit(money);
+
+            // 所持金が減って現在のベット額を下回った場合に、ベット額を所持金の上限に合わせるため
+            if (_currentBetSelection > _currentMoney)
+            {
+                _currentBetSelection = _currentMoney;
+                UpdateBetText();
+            }
         }
 
         [SerializeField] private TMP_Text _moneyText;
         [SerializeField] private TMP_Text _betAmountText;
-        [SerializeField] private Slider _betSlider;
+
+        [Header("Bet Controls")]
+        [SerializeField] private Button _increaseBetButton;
+        [SerializeField] private Button _decreaseBetButton;
+
+        [Header("Game Controls")]
         [SerializeField] private Button _startButton;
         [SerializeField] private Button _hitButton;
         [SerializeField] private Button _standButton;
 
         private BlackJackDealer _dealer;
-        private int _currentBetSelection;
+        private int _currentBetSelection = 100;
+        private int _currentMoney;
+        private const int BetStep = 100;
 
         private void Start()
         {
-            if (_betSlider != null)
-            {
-                _betSlider.onValueChanged.AddListener(OnBetSliderChanged);
-                // 初期値反映
-                OnBetSliderChanged(_betSlider.value);
-            }
+            // ベット額の増減ボタンにイベントを登録するため
+            if (_increaseBetButton != null) _increaseBetButton.onClick.AddListener(OnIncreaseBet);
+            if (_decreaseBetButton != null) _decreaseBetButton.onClick.AddListener(OnDecreaseBet);
 
-            // コードからイベントを登録することで、Inspectorでの設定漏れを防ぐ
+            // ゲーム進行ボタンにイベントを登録するため
             if (_startButton != null) _startButton.onClick.AddListener(OnStartButtonClicked);
             if (_hitButton != null) _hitButton.onClick.AddListener(OnHitButtonClicked);
             if (_standButton != null) _standButton.onClick.AddListener(OnStandButtonClicked);
+
+            // 初期状態の表示を更新するため
+            UpdateBetText();
         }
 
-        private void OnStartButtonClicked()
+        /// <summary>
+        ///     ベット額を増やす処理。
+        /// </summary>
+        private void OnIncreaseBet()
         {
-            // ユーザーが選択したベット額でゲームを開始するため
-            _dealer?.StartGame(_currentBetSelection);
+            // 所持金の範囲内でベット額を加算し、足りない場合は所持金全額をセットするため
+            if (_currentBetSelection + BetStep <= _currentMoney)
+            {
+                _currentBetSelection += BetStep;
+            }
+            else
+            {
+                _currentBetSelection = _currentMoney;
+            }
+            UpdateBetText();
         }
 
-        private void OnHitButtonClicked()
+        /// <summary>
+        ///     ベット額を減らす処理。
+        /// </summary>
+        private void OnDecreaseBet()
         {
-            // プレイヤーのHit操作をDealerへ伝えるため
-            _dealer?.Hit();
+            // 0未満にならない範囲でベット額を減算するため
+            if (_currentBetSelection - BetStep >= 0)
+            {
+                _currentBetSelection -= BetStep;
+            }
+            else
+            {
+                _currentBetSelection = 0;
+            }
+            UpdateBetText();
         }
 
-        private void OnStandButtonClicked()
+        /// <summary>
+        ///     ベット額のテキスト表示を更新する。
+        /// </summary>
+        private void UpdateBetText()
         {
-            // プレイヤーのStand操作をDealerへ伝えるため
-            _dealer?.Stand();
-        }
-
-        private void OnBetSliderChanged(float value)
-        {
-            _currentBetSelection = Mathf.RoundToInt(value);
-
+            // 現在選択されているベット額を画面に反映するため
             if (_betAmountText != null)
             {
-                _betAmountText.text = $"Bet: {_currentBetSelection}";
+                _betAmountText.text = $"{_currentBetSelection}";
             }
         }
 
-        private void UpdateBetLimit(int playerMoney)
+        /// <summary>
+        ///     スタートボタン押下時の処理。
+        /// </summary>
+        private void OnStartButtonClicked()
         {
-            if (_betSlider == null) return;
+            // 0より大きい金額が賭けられている場合のみゲームを開始するため
+            if (_currentBetSelection > 0)
+            {
+                _dealer?.StartGame(_currentBetSelection);
+            }
+        }
 
-            // 所持金以上のベットを防ぐため最大値を更新
-            _betSlider.maxValue = playerMoney;
-            
-            // 最低ベット額（10）を下回らないようにするが、所持金がそれ以下の場合は所持金を上限とする
-            _betSlider.minValue = Mathf.Min(10, playerMoney);
+        /// <summary>
+        ///     ヒットボタン押下時の処理。
+        /// </summary>
+        private void OnHitButtonClicked()
+        {
+            // プレイヤーのHit操作をDealerに伝えるため
+            _dealer?.Hit();
+        }
+
+        /// <summary>
+        ///     スタンドボタン押下時の処理。
+        /// </summary>
+        private void OnStandButtonClicked()
+        {
+            // プレイヤーのStand操作をDealerに伝えるため
+            _dealer?.Stand();
         }
     }
 }

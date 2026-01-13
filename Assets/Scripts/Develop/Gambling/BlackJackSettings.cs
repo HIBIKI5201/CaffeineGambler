@@ -3,21 +3,60 @@ using UnityEngine;
 namespace Develop.Gambling
 {
     /// <summary>
-    /// ブラックジャックのゲームバランス調整用パラメータを保持する ScriptableObject。
-    /// インスペクターから値を変更できるようにし、コードを書き換えずに調整を可能にする。
+    ///     ブラックジャックのゲームバランス調整用パラメータを保持する ScriptableObject。
+    ///     インスペクターから値を変更できるようにし、コードを書き換えずに調整を可能にする。
     /// </summary>
     [CreateAssetMenu(fileName = "BlackJackSettings", menuName = "Gambling/BlackJackSettings")]
     public class BlackJackSettings : ScriptableObject
     {
+        /// <summary>
+        ///     目標スコア。
+        /// </summary>
         public int TargetScore => _targetScore;
+
+        /// <summary>
+        ///     ディーラーがドローを止めるスコア。
+        /// </summary>
         public int DealerStandThreshold => _dealerStandThreshold;
+
+        /// <summary>
+        ///     エースのカード値。
+        /// </summary>
         public int CardAce => _cardAce;
+
+        /// <summary>
+        ///     ジャックのカード値。
+        /// </summary>
         public int CardJack => _cardJack;
+
+        /// <summary>
+        ///     ランダム抽選の最小値。
+        /// </summary>
         public int RandomRangeMin => _randomRangeMin;
+
+        /// <summary>
+        ///     ランダム抽選の最大値。
+        /// </summary>
         public int RandomRangeMaxExclusive => _randomRangeMaxExclusive;
+
+        /// <summary>
+        ///     エースのボーナススコア。
+        /// </summary>
         public int AceBonusScore => _aceBonusScore;
+
+        /// <summary>
+        ///     絵札の固定スコア。
+        /// </summary>
         public int FaceCardScore => _faceCardScore;
+
+        /// <summary>
+        ///     絵札として扱う数値の閾値。
+        /// </summary>
         public int FaceCardThreshold => _faceCardThreshold;
+
+        /// <summary>
+        ///     初期配布枚数。
+        /// </summary>
         public int InitialHandCount => _initialHandCount;
 
         [Header("Game Rules")]
