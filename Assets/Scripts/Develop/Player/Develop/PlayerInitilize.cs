@@ -3,10 +3,20 @@ using UnityEngine;
 
 public class PlayerInitilize : MonoBehaviour
 {
+    [SerializeField] private PlayerPresenter _playerPresenter;
+    [SerializeField] private PlayerViewer _playerViewer;
+    [SerializeField] private int _initialMoney = 1000;
 
-    private void Start()
+    private PlayerData _playerData;
+
+    private void Awake()
     {
-        PlayerData playerData = new PlayerData(1000);
-        PlayerData playerData1 = new PlayerData(-1);
+        _playerData = new PlayerData(_initialMoney);
+        _playerPresenter.Init(_playerData, _playerViewer);
+    }
+
+    private void OnDestroy()
+    {
+        _playerData?.OnDestroy();
     }
 }
