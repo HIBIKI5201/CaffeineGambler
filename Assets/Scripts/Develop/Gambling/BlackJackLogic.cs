@@ -5,38 +5,31 @@ namespace Develop.Gambling
 {
     /// <summary>
     /// ブラックジャックのゲームロジックを担当するクラス。
-    /// カードの配布、点数計算、勝敗判定を行う。
-    /// 勝負層に位置する。
+    /// ScriptableObject から設定を読み込み、カードの配布や勝敗判定を行う。
     /// </summary>
     public class BlackJackLogic
     {
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public BlackJackLogic()
+        /// <param name="settings">ゲーム設定データ</param>
+        public BlackJackLogic(BlackJackSettings settings)
         {
+            // 設定を保持
+            _settings = settings;
             ResetGame();
         }
 
-        // プレイヤーの手札
         public IReadOnlyList<int> PlayerHand => _playerHand;
-        // ディーラーの手札
         public IReadOnlyList<int> DealerHand => _dealerHand;
-
-        // ゲームが終了したかどうか
         public bool IsGameFinished { get; private set; }
-
-        private List<int> _playerHand;
-        private List<int> _dealerHand;
-        
-        // デッキ（簡易実装として無限デッキを想定し、ランダム生成する）
-        // 1=A, 11=J, 12=Q, 13=K
 
         /// <summary>
         /// ゲームの状態をリセットする。
         /// </summary>
         public void ResetGame()
         {
+            // 手札の初期化
             _playerHand = new List<int>();
             _dealerHand = new List<int>();
             IsGameFinished = false;
@@ -47,14 +40,12 @@ namespace Develop.Gambling
         /// </summary>
         public void DealInitialCards()
         {
-            _playerHand.Add(DrawCard());
-            _playerHand.Add(DrawCard());
-            
-            _dealerHand.Add(DrawCard());
-            _dealerHand.Add(DrawCard());
-
-            // ナチュラルブラックジャックの判定などはここで行っても良いが、
-            // 進行制御（Dealerクラス）側で点数を確認して判定することを想定。
+            // 初期枚数分カードを追加
+            for (int i = 0; i < _settings.InitialHandCount; i++)
+            {
+                _playerHand.Add(DrawCard());
+                _dealerHand.Add(DrawCard());
+            }
         }
 
         /// <summary>
@@ -65,25 +56,25 @@ namespace Develop.Gambling
         {
             if (IsGameFinished) return false;
 
+            // カードを追加してスコア確認
             _playerHand.Add(DrawCard());
-            
-            if (CalculateScore(_playerHand) > 21)
+
+            if (CalculateScore(_playerHand) > _settings.TargetScore)
             {
-                // バースト
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// ディーラーのターンを実行する（スタンド後の処理）。
-        /// ディーラーは17以上になるまで引き続ける。
+        /// ディーラーのターンを実行する。
         /// </summary>
         public void DealerTurn()
         {
             if (IsGameFinished) return;
 
-            while (CalculateScore(_dealerHand) < 17)
+            // 閾値を超えるまで引き続ける
+            while (CalculateScore(_dealerHand) < _settings.DealerStandThreshold)
             {
                 _dealerHand.Add(DrawCard());
             }
@@ -100,17 +91,15 @@ namespace Develop.Gambling
             int playerScore = CalculateScore(_playerHand);
             int dealerScore = CalculateScore(_dealerHand);
 
-            // プレイヤーがバーストしている場合
-            if (playerScore > 21)
+            // プレイヤーのバースト判定
+            if (playerScore > _settings.TargetScore)
             {
                 return GamblingResult.Lose;
             }
 
-            // ディーラーがバーストしている場合
-            if (dealerScore > 21)
+            // ディーラーのバースト判定
+            if (dealerScore > _settings.TargetScore)
             {
-                // プレイヤーはバーストしていないので勝ち
-                // ブラックジャックかどうかの判定（初手2枚で21の場合）
                 if (IsBlackJack(_playerHand)) return GamblingResult.BlackJack;
                 return GamblingResult.Win;
             }
@@ -127,25 +116,15 @@ namespace Develop.Gambling
             }
             else
             {
-                // 引き分け
                 return GamblingResult.Draw;
             }
         }
 
         /// <summary>
-        /// カードを1枚引く（1〜13のランダム）。
-        /// </summary>
-        private int DrawCard()
-        {
-            // 1(A) ～ 13(K)
-            return UnityEngine.Random.Range(1, 14);
-        }
-
-        /// <summary>
         /// 手札の点数を計算する。
-        /// Aは1または11として扱い、最適な方を採用する。
-        /// J, Q, Kは10として扱う。
         /// </summary>
+        /// <param name="hand">計算対象の手札</param>
+        /// <returns>計算された点数</returns>
         public int CalculateScore(List<int> hand)
         {
             int score = 0;
@@ -153,14 +132,16 @@ namespace Develop.Gambling
 
             foreach (var card in hand)
             {
-                if (card == 1) // Ace
+                if (card == _settings.CardAce)
                 {
+                    // Aは一旦11点として計算
                     aceCount++;
-                    score += 11; // 一旦11として加算
+                    score += (_settings.CardAce + _settings.AceBonusScore);
                 }
-                else if (card >= 11) // J, Q, K
+                else if (card >= _settings.FaceCardThreshold)
                 {
-                    score += 10;
+                    // 絵札は一律設定された点数（10点）
+                    score += _settings.FaceCardScore;
                 }
                 else
                 {
@@ -168,22 +149,35 @@ namespace Develop.Gambling
                 }
             }
 
-            // 21を超えていて、Aがある場合はAを1として扱う（-10する）
-            while (score > 21 && aceCount > 0)
+            // 目標点数を超えている場合、Aを1点として扱い直す
+            while (score > _settings.TargetScore && aceCount > 0)
             {
-                score -= 10;
+                score -= _settings.AceBonusScore;
                 aceCount--;
             }
 
             return score;
         }
 
+        private readonly BlackJackSettings _settings;
+        private List<int> _playerHand;
+        private List<int> _dealerHand;
+
         /// <summary>
-        /// 手札がブラックジャック（2枚で21点）かどうか判定する。
+        /// カードを1枚ランダムに引く。
+        /// </summary>
+        private int DrawCard()
+        {
+            return Random.Range(_settings.RandomRangeMin, _settings.RandomRangeMaxExclusive);
+        }
+
+        /// <summary>
+        /// 手札がブラックジャックかどうか判定する。
         /// </summary>
         private bool IsBlackJack(List<int> hand)
         {
-            return hand.Count == 2 && CalculateScore(hand) == 21;
+            // 枚数と点数が設定通りならブラックジャック
+            return hand.Count == _settings.InitialHandCount && CalculateScore(hand) == _settings.TargetScore;
         }
     }
 }
