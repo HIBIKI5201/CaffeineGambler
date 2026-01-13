@@ -26,7 +26,7 @@ namespace Develop.Player
 
 
         // プレイヤーの所持金
-        ReactiveProperty<int> Money = new ReactiveProperty<int>(0);
+     public  ReactiveProperty<int> Money = new ReactiveProperty<int>(0);
 
         public void AddMoney(int amount)
         {
