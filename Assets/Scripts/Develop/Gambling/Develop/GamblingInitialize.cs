@@ -55,6 +55,9 @@ namespace Develop.Gambling.Develop
             }
 
             _dealer.Initialize(logic, economy);
+            
+            // UI層へDealerを注入
+            _uiPresenter.SetDealer(_dealer);
 
             Debug.Log("Gambling System Initialized with separate ScriptableObject settings.");
         }
