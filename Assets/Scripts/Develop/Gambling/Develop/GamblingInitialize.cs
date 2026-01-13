@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Develop.Player;
 using UniRx;
 
@@ -10,13 +10,13 @@ namespace Develop.Gambling.Develop
     /// </summary>
     public class GamblingInitialize : MonoBehaviour
     {
-        [SerializeField] private BlackJackDealer _dealer;
         [Header("Settings")]
         [SerializeField] private BlackJackSettings _blackJackSettings;
         [SerializeField] private GamblingEconomySettings _economySettings;
         [SerializeField] private UiPresenter _uiPresenter;
 
         private const int InitialPlayerMoney = 1000;
+        private BlackJackDealer _dealer;
 
         private void Start()
         {
@@ -39,19 +39,20 @@ namespace Develop.Gambling.Develop
                 _uiPresenter.UpdateMoneyDisplay(money);
             })
             .AddTo(this);
-                
-            // 経済システムと計算ロジックをインスタンス化するため
-            GamblingEconomy economy = new GamblingEconomy(playerData, _economySettings);
-            BlackJackLogic logic = new BlackJackLogic(_blackJackSettings);
-
-            _dealer = BlackJackDealerLocator.GetDealer();
-            // 生成したロジック等をディーラーに注入して初期化するため
-            _dealer.Initialize(logic, economy);
+            
+            // ロケーターを使用してディーラーとその依存関係を一括で解決（生成・初期化）するため
+            _dealer = BlackJackDealerLocator.Resolve(_blackJackSettings, _economySettings, playerData);
 
             // UIがディーラーを操作できるように参照を渡すため
             _uiPresenter.SetDealer(_dealer);
 
-            Debug.Log("Gambling System Initialized with separate ScriptableObject settings.");
+            Debug.Log("Gambling System Initialized using Locator.");
+        }
+
+        private void OnDestroy()
+        {
+            // シーン遷移や終了時に参照をクリアするため
+            BlackJackDealerLocator.Clear();
         }
     }
 }
