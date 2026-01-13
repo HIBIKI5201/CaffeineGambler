@@ -31,6 +31,10 @@ namespace Develop.Gambling
             return _playerData.TrySpendMoney(amount);
         }
 
+        // 配当倍率
+        private const int WinMultiplier = 2;
+        private const int BlackJackMultiplier = 3;
+
         /// <summary>
         /// 勝負結果に基づいて配当を計算し、プレイヤーに付与する。
         /// </summary>
@@ -48,11 +52,11 @@ namespace Develop.Gambling
                     returnAmount = betAmount; // 返金
                     break;
                 case GamblingResult.Win:
-                    returnAmount = betAmount * 2; // 2倍
+                    returnAmount = betAmount * WinMultiplier; // 2倍
                     break;
                 case GamblingResult.BlackJack:
                     // 通常2.5倍だが、整数計算のため3倍とする（ボーナス要素）
-                    returnAmount = betAmount * 3; 
+                    returnAmount = betAmount * BlackJackMultiplier; 
                     break;
             }
 
