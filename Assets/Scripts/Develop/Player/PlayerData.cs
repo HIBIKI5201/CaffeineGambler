@@ -26,7 +26,7 @@ namespace Develop.Player
 
 
         // プレイヤーの所持金
-     public  ReactiveProperty<int> Money = new ReactiveProperty<int>(0);
+        public ReactiveProperty<int> Money = new ReactiveProperty<int>(0);
 
         public void AddMoney(int amount)
         {
@@ -49,7 +49,10 @@ namespace Develop.Player
             return false;
         }
 
-       
+        public void OnDestroy()
+        {
+            Money.Dispose();
+        }
     }
 }
 
