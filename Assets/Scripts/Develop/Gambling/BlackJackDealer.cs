@@ -1,6 +1,4 @@
-using UnityEngine;
-using UniRx;
-using System;
+﻿using UnityEngine;
 
 namespace Develop.Gambling
 {
@@ -11,17 +9,9 @@ namespace Develop.Gambling
     /// </summary>
     public class BlackJackDealer : MonoBehaviour
     {
-        // 依存関係
-        private BlackJackLogic _logic;
-        private GamblingEconomy _economy;
-
-        // 現在の賭け金
-        private int _currentBetAmount;
-
         // ゲーム中かどうか
         public bool IsGameActive { get; private set; }
 
-        // UI表示用イベント（必要に応じてViewが購読する）
         // 簡易実装のためDebug.Logで経過を表示するが、本来はPresenter/Viewへ通知する
         
         /// <summary>
@@ -93,6 +83,13 @@ namespace Develop.Gambling
             _logic.DealerTurn();
             EndGame();
         }
+
+        // 依存関係
+        private BlackJackLogic _logic;
+        private GamblingEconomy _economy;
+
+        // 現在の賭け金
+        private int _currentBetAmount;
 
         /// <summary>
         /// ゲームを終了し、結果を確定・配当を行う。
