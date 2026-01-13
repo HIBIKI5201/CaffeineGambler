@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Develop.Player;
 using UniRx;
 
@@ -44,13 +44,7 @@ namespace Develop.Gambling.Develop
             GamblingEconomy economy = new GamblingEconomy(playerData, _economySettings);
             BlackJackLogic logic = new BlackJackLogic(_blackJackSettings);
 
-            // ディーラーオブジェクトがシーン内に存在しない場合に自動生成するため
-            if (_dealer == null)
-            {
-                GameObject go = new GameObject("BlackJackDealer");
-                _dealer = go.AddComponent<BlackJackDealer>();
-            }
-
+            _dealer = BlackJackDealerLocator.GetDealer();
             // 生成したロジック等をディーラーに注入して初期化するため
             _dealer.Initialize(logic, economy);
 
