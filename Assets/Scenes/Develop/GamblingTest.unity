@@ -1467,6 +1467,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Develop.Gambling.Develop.GamblingInitialize
   _dealer: {fileID: 422410270}
+  _blackJackSettings: {fileID: 11400000, guid: 8a00770689f4eee4294fc4cd4ceabff6, type: 2}
+  _economySettings: {fileID: 11400000, guid: 73a1770e433757e46bfc378e5aa80e25, type: 2}
   _uiPresenter: {fileID: 1183614220}
 --- !u!4 &1871324707
 Transform:
