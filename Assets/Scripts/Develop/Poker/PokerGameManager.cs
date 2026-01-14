@@ -35,8 +35,7 @@ public class PokerGameManager : MonoBehaviour
     /// <summary>
     /// UI ボタンから呼び出し、カード情報をログに出力する。
     /// </summary>
-    /// <param name="index">表示したいカードのインデックス。</param>
-    public void LogCardInfo(int index)
+    public void LogCardInfo()
     {
         if (!TryEnsureHandReady())
         {
