@@ -33,7 +33,7 @@ public class PokerGameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI ボタンから呼び出し、指定インデックスのカード情報をログに出力する。
+    /// UI ボタンから呼び出し、カード情報をログに出力する。
     /// </summary>
     /// <param name="index">表示したいカードのインデックス。</param>
     public void LogCardInfo(int index)
@@ -43,14 +43,11 @@ public class PokerGameManager : MonoBehaviour
             return;
         }
 
-        if (index < 0 || index >= _hand.Cards.Count)
+        for (var i = 0; i < _hand.Cards.Count; i++)
         {
-            Debug.LogWarning($"LogCardInfo: index {index} is out of range.");
-            return;
+            var cardText = FormatCard(_hand.Cards[i]);
+            Debug.Log($"[Poker] Card[{i}]: {cardText}");
         }
-
-        var cardText = FormatCard(_hand.Cards[index]);
-        Debug.Log($"[Poker] Card[{index}]: {cardText}");
     }
 
     /// <summary>
