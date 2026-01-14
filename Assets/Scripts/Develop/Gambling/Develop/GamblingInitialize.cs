@@ -18,7 +18,7 @@ namespace Develop.Gambling.Develop
         private const int InitialPlayerMoney = 1000;
         private BlackJackDealer _dealer;
 
-        private void Start()
+        private void Awake()
         {
             // ゲームに必要な設定ファイルが存在するか確認するため
             if (_blackJackSettings == null)
