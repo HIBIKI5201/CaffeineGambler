@@ -1,4 +1,4 @@
-using Develop.Gambling;
+﻿using Develop.Gambling;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -18,6 +18,7 @@ namespace Develop.Gambling.Develop
         {
             // UIからの操作をゲームロジックに伝えるための参照を保持するため
             _dealer = dealer;
+            Debug.Log(dealer);
         }
 
         /// <summary>
