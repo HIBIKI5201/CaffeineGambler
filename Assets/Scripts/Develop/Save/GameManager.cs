@@ -34,6 +34,7 @@ namespace Develop.Save
             _disposables = new CompositeDisposable();
             _playerDataHandler = new PlayerDataHandler();
             _playerDataHandler.Load();
+            PlayerData.Money.Subscribe(money => _playerViewer.SetCount(money)).AddTo(_disposables);
         }
 
         private void OnApplicationQuit()
@@ -52,7 +53,6 @@ namespace Develop.Save
         private void Update()
         {
             PlayerData?.AddMoney(1);
-            PlayerData.Money.Subscribe(money => _playerViewer.SetCount(money)).AddTo(_disposables);
         }
     }
 }
