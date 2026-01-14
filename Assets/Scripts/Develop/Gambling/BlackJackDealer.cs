@@ -29,7 +29,10 @@ namespace Develop.Gambling
             _stateMachine = new BlackJackStateMachine();
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
         }
-
+        public void RevealDealerHiddenCard()
+        {
+            _dealerPresenter.RevealDealerHiddenCard();
+        }
         /// <summary>
         /// 表示されているすべてのカードをクリアする。
         /// </summary>
@@ -83,6 +86,15 @@ namespace Develop.Gambling
             int dScore = _logic.CalculateScore(_logic.DealerHand);
 
             Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
+        }
+
+        /// <summary>
+        /// コルーチンを開始する。StateなどMonoBehaviourを継承していないクラスから利用する。
+        /// </summary>
+        /// <param name="coroutine">実行するコルーチン</param>
+        public void StartDealerCoroutine(System.Collections.IEnumerator coroutine)
+        {
+            StartCoroutine(coroutine);
         }
 
         private BlackJackLogic _logic;

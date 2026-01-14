@@ -214,5 +214,24 @@ namespace Develop.Gambling
             }
             _instantiatedCards.Clear(); // Clear the list after destroying all cards
         }
+
+        /// <summary>
+        /// ディーラーの裏向きのカードを表にする。
+        /// </summary>
+        public void RevealDealerHiddenCard()
+        {
+            // ディーラーの手札コンテナ内のカードを検索
+            foreach (Transform child in _placementController.DealerHandContainer)
+            {
+                CardView cardView = child.GetComponent<CardView>();
+                if (cardView != null && !cardView.IsFaceUp)
+                {
+                    cardView.Flip();
+                    Debug.Log("ディーラーの裏向きのカードを表にしました。");
+                    return; // 1枚見つけたら終了
+                }
+            }
+            Debug.LogWarning("ディーラーの裏向きのカードが見つかりませんでした。");
+        }
     }
 }
