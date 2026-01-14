@@ -1,10 +1,7 @@
-using Develop.Poker;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Develop.Poker
 {
@@ -17,9 +14,6 @@ namespace Develop.Poker
         [SerializeField] private CardViewer _cardViewer;
         /// <summary>役表示用ラベル。</summary>
         [SerializeField] private TextMeshProUGUI _rankLabel;
-        [SerializeField] private List<Image> _cardImages;
-        [SerializeField] private Color _normalColor = Color.white;
-        [SerializeField] private Color _selectedColor = Color.red;
         private readonly HashSet<int> _selectedIndices = new();
 
         /// <summary>
@@ -94,7 +88,7 @@ namespace Develop.Poker
                 _selectedIndices.Add(index);
             }
 
-            UpdateCardHighlights();
+            UpdateSelectionVisuals();
         }
 
         /// <summary>
@@ -106,11 +100,12 @@ namespace Develop.Poker
             {
                 _cardViewer?.SetCards(null);
                 _rankLabel?.SetText("-");
+                _selectedIndices.Clear();
                 return;
             }
 
             var currentHand = _gameManager.CurrentHand;
-            _cardViewer?.SetCards(currentHand);
+            _cardViewer?.SetCards(currentHand, _selectedIndices);
             _rankLabel?.SetText(_gameManager.EvaluateCurrentHand().ToString());
         }
 
@@ -139,18 +134,13 @@ namespace Develop.Poker
             return true;
         }
 
-        private void UpdateCardHighlights()
+        private void UpdateSelectionVisuals()
         {
-            for (var i = 0; i < _cardImages.Count; i++)
+            if (!TryEnsureHandReady())
             {
-                var image = _cardImages[i];
-                if (image == null)
-                {
-                    continue;
-                }
-
-                image.color = _selectedIndices.Contains(i) ? _selectedColor : _normalColor;
+                return;
             }
+            _cardViewer?.SetCards(_gameManager.CurrentHand, _selectedIndices);
         }
     }
 }
