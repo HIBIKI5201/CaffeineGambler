@@ -19,14 +19,26 @@ namespace Develop.Gambling
         /// <summary>
         /// 依存関係を注入する初期化メソッド。
         /// </summary>
-        public void Initialize(BlackJackLogic logic, GamblingEconomy economy)
+        public void Initialize(BlackJackLogic logic, GamblingEconomy economy, DealerPresenter dealerPresenter)
         {
             _logic = logic;
             _economy = economy;
+            _dealerPresenter = dealerPresenter; // Assign the DealerPresenter
             
             // ステートマシンの生成と初期化
             _stateMachine = new BlackJackStateMachine();
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
+        }
+        public void RevealDealerHiddenCard()
+        {
+            _dealerPresenter.RevealDealerHiddenCard();
+        }
+        /// <summary>
+        /// 表示されているすべてのカードをクリアする。
+        /// </summary>
+        public void ClearAllCardsDisplayed()
+        {
+            _dealerPresenter.ClearDisplayedCards();
         }
 
         /// <summary>
@@ -76,8 +88,18 @@ namespace Develop.Gambling
             Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
         }
 
+        /// <summary>
+        /// コルーチンを開始する。StateなどMonoBehaviourを継承していないクラスから利用する。
+        /// </summary>
+        /// <param name="coroutine">実行するコルーチン</param>
+        public void StartDealerCoroutine(System.Collections.IEnumerator coroutine)
+        {
+            StartCoroutine(coroutine);
+        }
+
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;
         private BlackJackStateMachine _stateMachine;
+        private DealerPresenter _dealerPresenter; // New field for DealerPresenter
     }
 }

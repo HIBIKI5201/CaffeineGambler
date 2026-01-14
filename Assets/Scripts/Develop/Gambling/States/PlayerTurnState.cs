@@ -53,7 +53,14 @@ namespace Develop.Gambling.States
         /// </summary>
         public override void OnStand()
         {
-            // プレイヤーの意思でドローを終了し、ディーラーのターンへ移行するため
+            // ディーラーの裏向きのカードを表にし、少し待ってから次のステートへ移行するため
+            Dealer.StartDealerCoroutine(StandSequence());
+        }
+
+        private System.Collections.IEnumerator StandSequence()
+        {
+            Dealer.RevealDealerHiddenCard();
+            yield return new WaitForSeconds(1f); // 1秒待機
             StateMachine.ChangeState(new DealerTurnState(Dealer, StateMachine));
         }
     }
