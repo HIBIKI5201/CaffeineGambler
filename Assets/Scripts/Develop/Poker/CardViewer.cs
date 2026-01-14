@@ -51,16 +51,14 @@ namespace Develop.Poker
 
                 var isSelected = revealCards && selected != null && selected.Contains(i);
                 var highlightColor = isSelected ? _selectedColor : _normalColor;
-                var visualColor = hasCard
+                var buttonColor = hasCard
                     ? (revealCards ? highlightColor : _hiddenColor)
                     : _normalColor;
-
-                text.color = visualColor;
 
                 if (_cardButtons != null && i < _cardButtons.Count && _cardButtons[i] != null)
                 {
                     var button = _cardButtons[i];
-                    button.image.color = visualColor;
+                    button.image.color = buttonColor;
                     if (_disableButtonsWhenHidden)
                     {
                         button.interactable = revealCards && hasCard;
