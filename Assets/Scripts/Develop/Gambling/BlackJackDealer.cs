@@ -19,14 +19,23 @@ namespace Develop.Gambling
         /// <summary>
         /// 依存関係を注入する初期化メソッド。
         /// </summary>
-        public void Initialize(BlackJackLogic logic, GamblingEconomy economy)
+        public void Initialize(BlackJackLogic logic, GamblingEconomy economy, DealerPresenter dealerPresenter)
         {
             _logic = logic;
             _economy = economy;
+            _dealerPresenter = dealerPresenter; // Assign the DealerPresenter
             
             // ステートマシンの生成と初期化
             _stateMachine = new BlackJackStateMachine();
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
+        }
+
+        /// <summary>
+        /// 表示されているすべてのカードをクリアする。
+        /// </summary>
+        public void ClearAllCardsDisplayed()
+        {
+            _dealerPresenter.ClearDisplayedCards();
         }
 
         /// <summary>
@@ -79,5 +88,6 @@ namespace Develop.Gambling
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;
         private BlackJackStateMachine _stateMachine;
+        private DealerPresenter _dealerPresenter; // New field for DealerPresenter
     }
 }

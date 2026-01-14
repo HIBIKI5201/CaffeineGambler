@@ -48,7 +48,7 @@ namespace Develop.Gambling.Develop
             .AddTo(this);
             
             // ロケーターを使用してディーラーとその依存関係を一括で解決（生成・初期化）するため
-            _dealer = BlackJackDealerLocator.Resolve(_blackJackSettings, _economySettings, playerData);
+            _dealer = BlackJackDealerLocator.Resolve(_blackJackSettings, _economySettings, playerData, _dealerPresenter);
 
             // UIがディーラーを操作できるように参照を渡すため
             _uiPresenter.SetDealer(_dealer);

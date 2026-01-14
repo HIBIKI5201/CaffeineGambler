@@ -21,7 +21,8 @@ namespace Develop.Gambling.Develop
         public static BlackJackDealer Resolve(
             BlackJackSettings bjSettings, 
             GamblingEconomySettings economySettings, 
-            PlayerData playerData)
+            PlayerData playerData,
+            DealerPresenter dealerPresenter) // Add DealerPresenter parameter
         {
             // シーン内でディーラーが重複しないようにするため
             if (_dealer != null)
@@ -38,7 +39,7 @@ namespace Develop.Gambling.Develop
             var logic = new BlackJackLogic(bjSettings);
 
             // 生成した依存関係をDealerに渡して機能するようにするため
-            _dealer.Initialize(logic, economy);
+            _dealer.Initialize(logic, economy, dealerPresenter); // Pass dealerPresenter
 
             return _dealer;
         }

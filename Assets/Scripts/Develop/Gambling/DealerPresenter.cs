@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Develop.Gambling
@@ -24,6 +25,9 @@ namespace Develop.Gambling
         [Tooltip("カードのスプライトを一元管理するリポジトリ")]
         [SerializeField] private CardSpriteRepository _cardSpriteRepository;
 
+        private List<GameObject> _instantiatedCards = new List<GameObject>(); // New: Keep track of all instantiated cards
+
+
         [Header("Card Placement Settings")]
         [Tooltip("カード間の水平方向の間隔 (X軸オフセット)")]
         [SerializeField] private float _cardHorizontalOffset = 0.15f;
@@ -40,6 +44,7 @@ namespace Develop.Gambling
             {
                 _dealer.Logic.OnCardDealt -= HandleCardDealt;
             }
+            ClearDisplayedCards(); // Ensure all cards are destroyed on presenter destruction
         }
         
         /// <summary>
@@ -91,6 +96,7 @@ namespace Develop.Gambling
                 return;
             }
             GameObject cardObject = Instantiate(_cardPrefab, _placementController.DealerCardOrigin.position, _placementController.DealerCardOrigin.rotation);
+            _instantiatedCards.Add(cardObject); // Add card to tracking list
 
             // 3. CardViewにスプライトと値を設定
             CardView cardView = cardObject.GetComponent<CardView>();
@@ -146,6 +152,13 @@ namespace Develop.Gambling
 
             while (elapsedTime < _cardDealDuration)
             {
+                // If the card was destroyed during the animation (e.g., due to game reset/bust),
+                // stop the animation to prevent MissingReferenceException.
+                if (cardObject == null)
+                {
+                    yield break; // Exit the coroutine
+                }
+
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / _cardDealDuration);
 
@@ -185,6 +198,21 @@ namespace Develop.Gambling
                 }
                 // else: ディーラーの2枚目はFlipせずに裏向きのままにする
             }
+        }
+
+        /// <summary>
+        /// 表示されているすべてのカードをシーンから削除する。
+        /// </summary>
+        public void ClearDisplayedCards()
+        {
+            foreach (GameObject cardObject in _instantiatedCards)
+            {
+                if (cardObject != null) // Check if the object still exists before destroying
+                {
+                    Destroy(cardObject);
+                }
+            }
+            _instantiatedCards.Clear(); // Clear the list after destroying all cards
         }
     }
 }
