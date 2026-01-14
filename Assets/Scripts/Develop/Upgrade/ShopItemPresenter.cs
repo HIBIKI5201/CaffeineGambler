@@ -1,3 +1,4 @@
+using System;
 using UniRx;
 using UnityEngine;
 
@@ -8,5 +9,16 @@ namespace Develop.Upgrade
     /// </summary>
     public class ShopItemPresenter : MonoBehaviour
     {
+        public IObservable<Unit> OnBuyClicked => _onBuyClicked;
+
+        private Subject<Unit> _onBuyClicked = new();
+
+        public void Init(ShopItemView shopItemView)
+        {
+
+            shopItemView.BuyButton.OnClickAsObservable()
+                .Subscribe(_ => _onBuyClicked.OnNext(Unit.Default))
+                .AddTo(this);
+        }
     }
 }
