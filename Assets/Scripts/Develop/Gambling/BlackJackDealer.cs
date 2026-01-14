@@ -1,6 +1,7 @@
 using UnityEngine;
 using Develop.Gambling.States;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Develop.Gambling
 {
@@ -65,11 +66,12 @@ namespace Develop.Gambling
         /// </summary>
         public void LogHandStatus()
         {
-            string pHand = string.Join(",", _logic.PlayerHand);
-            int pScore = _logic.CalculateScore(new List<int>(_logic.PlayerHand));
+            // Cardオブジェクトのリストを文字列に変換
+            string pHand = string.Join(",", _logic.PlayerHand.Select(card => card.ToString()));
+            int pScore = _logic.CalculateScore(_logic.PlayerHand);
             
-            string dHand = string.Join(",", _logic.DealerHand);
-            int dScore = _logic.CalculateScore(new List<int>(_logic.DealerHand));
+            string dHand = string.Join(",", _logic.DealerHand.Select(card => card.ToString()));
+            int dScore = _logic.CalculateScore(_logic.DealerHand);
 
             Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
         }

@@ -17,7 +17,7 @@ namespace Develop.Gambling.Develop
 
         private const int InitialPlayerMoney = 1000;
 
-        private void Start()
+        private void Awake()
         {
             // 1. 設定のバリデーション
             if (_blackJackSettings == null)
