@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
 
 namespace Develop.Gambling
 {
@@ -9,6 +10,13 @@ namespace Develop.Gambling
     /// </summary>
     public class BlackJackLogic
     {
+        /// <summary>
+        /// カードが配られたときに発行されるイベント。
+        /// 第1引数: 配られた対象 (Player/Dealer)
+        /// 第2引数: 配られたカードの情報
+        /// </summary>
+        public event Action<GamblingParticipant, Card> OnCardDealt;
+        
         /// <summary>
         /// コンストラクタ。
         /// </summary>
@@ -20,18 +28,26 @@ namespace Develop.Gambling
             ResetGame();
         }
 
-        public IReadOnlyList<int> PlayerHand => _playerHand;
-        public IReadOnlyList<int> DealerHand => _dealerHand;
+        public IReadOnlyList<Card> PlayerHand => _playerHand;
+        public IReadOnlyList<Card> DealerHand => _dealerHand;
         public bool IsGameFinished { get; private set; }
+
+        private Deck _deck;
+        private readonly BlackJackSettings _settings;
+        private List<Card> _playerHand;
+        private List<Card> _dealerHand;
 
         /// <summary>
         /// ゲームの状態をリセットする。
         /// </summary>
         public void ResetGame()
         {
+            // 新しいデッキを作成しシャッフル
+            _deck = new Deck();
+            
             // 手札の初期化
-            _playerHand = new List<int>();
-            _dealerHand = new List<int>();
+            _playerHand = new List<Card>();
+            _dealerHand = new List<Card>();
             IsGameFinished = false;
         }
 
@@ -43,8 +59,8 @@ namespace Develop.Gambling
             // 初期枚数分カードを追加
             for (int i = 0; i < _settings.InitialHandCount; i++)
             {
-                _playerHand.Add(DrawCard());
-                _dealerHand.Add(DrawCard());
+                DistributeCard(GamblingParticipant.Player);
+                DistributeCard(GamblingParticipant.Dealer);
             }
         }
 
@@ -57,7 +73,7 @@ namespace Develop.Gambling
             if (IsGameFinished) return false;
 
             // カードを追加してスコア確認
-            _playerHand.Add(DrawCard());
+            DistributeCard(GamblingParticipant.Player);
 
             if (CalculateScore(_playerHand) > _settings.TargetScore)
             {
@@ -76,7 +92,7 @@ namespace Develop.Gambling
             // 閾値を超えるまで引き続ける
             while (CalculateScore(_dealerHand) < _settings.DealerStandThreshold)
             {
-                _dealerHand.Add(DrawCard());
+                DistributeCard(GamblingParticipant.Dealer);
             }
         }
 
@@ -125,56 +141,62 @@ namespace Develop.Gambling
         /// </summary>
         /// <param name="hand">計算対象の手札</param>
         /// <returns>計算された点数</returns>
-        public int CalculateScore(List<int> hand)
+        public int CalculateScore(IReadOnlyList<Card> hand)
         {
             int score = 0;
-            int aceCount = 0;
+            int aceCount = hand.Count(card => card.Rank == Rank.Ace);
 
             foreach (var card in hand)
             {
-                if (card == _settings.CardAce)
+                if (card.Rank == Rank.Ace)
                 {
                     // Aは一旦11点として計算
-                    aceCount++;
-                    score += (_settings.CardAce + _settings.AceBonusScore);
+                    score += _settings.AceBonusScore; 
                 }
-                else if (card >= _settings.FaceCardThreshold)
+                else if (card.Rank >= Rank.Ten)
                 {
-                    // 絵札は一律設定された点数（10点）
+                    // 10, J, Q, Kは一律設定された点数（10点）
                     score += _settings.FaceCardScore;
                 }
                 else
                 {
-                    score += card;
+                    score += (int)card.Rank;
                 }
             }
 
             // 目標点数を超えている場合、Aを1点として扱い直す
             while (score > _settings.TargetScore && aceCount > 0)
             {
-                score -= _settings.AceBonusScore;
+                score -= (_settings.AceBonusScore - 1); // 11点から1点にするため10引く
                 aceCount--;
             }
 
             return score;
         }
-
-        private readonly BlackJackSettings _settings;
-        private List<int> _playerHand;
-        private List<int> _dealerHand;
-
+        
         /// <summary>
-        /// カードを1枚ランダムに引く。
+        /// 指定された対象にカードを1枚配り、イベントを発行する。
         /// </summary>
-        private int DrawCard()
+        /// <param name="participant">カードを配る対象</param>
+        private void DistributeCard(GamblingParticipant participant)
         {
-            return Random.Range(_settings.RandomRangeMin, _settings.RandomRangeMaxExclusive);
+            var card = _deck.Draw();
+            switch (participant)
+            {
+                case GamblingParticipant.Player:
+                    _playerHand.Add(card);
+                    break;
+                case GamblingParticipant.Dealer:
+                    _dealerHand.Add(card);
+                    break;
+            }
+            OnCardDealt?.Invoke(participant, card);
         }
 
         /// <summary>
         /// 手札がブラックジャックかどうか判定する。
         /// </summary>
-        private bool IsBlackJack(List<int> hand)
+        private bool IsBlackJack(IReadOnlyList<Card> hand)
         {
             // 枚数と点数が設定通りならブラックジャック
             return hand.Count == _settings.InitialHandCount && CalculateScore(hand) == _settings.TargetScore;
