@@ -8,6 +8,8 @@ namespace Develop.Save
     /// </summary>
     public class PlayerData
     {
+        public const string MoneyKey = "Money";
+
         /// <summary>
         /// プレイヤーのデータを生成する。    
         /// </summary>
