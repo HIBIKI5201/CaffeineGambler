@@ -1,16 +1,27 @@
 using UnityEngine;
 
-public class ShopItemView : MonoBehaviour
+namespace Develop.Upgrade
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    /// <summary>
+    /// ショップアイテムのビュー。
+    /// </summary>
+    public class ShopItemView : MonoBehaviour
     {
-        
-    }
+        public UnityEngine.UI.Button BuyButton => _buyButton;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [SerializeField] private TMPro.TextMeshProUGUI _nameText;
+        [SerializeField] private TMPro.TextMeshProUGUI _levelText;
+        [SerializeField] private TMPro.TextMeshProUGUI _costText;
+        [SerializeField] private UnityEngine.UI.Button _buyButton;
+
+        public void Set(IUpgrade upgrade, UnityEngine.Events.UnityAction onClick)
+        {
+            _nameText.text = upgrade.Name;
+            _levelText.text = $"Lv.{upgrade.Level}/{upgrade.MaxLevel}";
+            _costText.text = upgrade.Cost.ToString();
+            _buyButton.onClick.RemoveAllListeners();
+            _buyButton.onClick.AddListener(onClick);
+            _buyButton.interactable = upgrade.Level < upgrade.MaxLevel;
+        }
     }
 }
