@@ -5,58 +5,98 @@ using UnityEngine;
 namespace Develop.Poker
 {
     /// <summary>
-    /// 山札・手札・役判定を統括し、プレイサイクルを進行させる。
+    /// 山札の生成と手札の配布・交換を一元管理し、プレイヤー／敵双方の役判定を提供するゲームマネージャー。
     /// </summary>
     public class PokerGameManager : MonoBehaviour
     {
-        /// <summary>現在の手札（読み取り専用）。</summary>
-        public IReadOnlyList<Card> CurrentHand => _hand.Cards;
-        [SerializeField] private bool _includeJoker;
-        [SerializeField] private int _handSize = 5;
-        private Deck _deck;
-        private Hand _hand;
-
-        /// <summary>現在の手札を評価して役を返す。</summary>
-        public PokerRank EvaluateCurrentHand() => HandEvaluator.Evaluate(_hand);
-
-        /// <summary>
-        /// 新しいラウンド用に手札を配り直す。
-        /// </summary>
-        public void DealInitialHand()
+        /// <summary>手札の所有者を識別するための列挙体。</summary>
+        public enum HandOwner
         {
-            EnsureDeckHasEnoughCards(_handSize);
-            _hand.Clear();
-            DrawToHand(_handSize);
+            Player,
+            Enemy
         }
 
-        /// <summary>
-        /// 指定インデックスのカードを1枚引き直す。
-        /// </summary>
-        public void ReplaceCardAt(int index)
+        [SerializeField] private bool _includeJoker;
+        [SerializeField] private int _handSize = 5;
+
+        private Deck _deck;
+        private Hand _playerHand;
+        private Hand _enemyHand;
+
+        /// <summary>後方互換用プロパティ。常にプレイヤー手札を返す。</summary>
+        public IReadOnlyList<Card> CurrentHand => PlayerHand;
+
+        /// <summary>プレイヤーの現在手札。</summary>
+        public IReadOnlyList<Card> PlayerHand => _playerHand.Cards;
+
+        /// <summary>敵の現在手札。</summary>
+        public IReadOnlyList<Card> EnemyHand => _enemyHand.Cards;
+
+        /// <summary>指定した所有者の手札を返す。</summary>
+        public IReadOnlyList<Card> GetHand(HandOwner owner) =>
+            owner == HandOwner.Player ? _playerHand.Cards : _enemyHand.Cards;
+
+        /// <summary>プレイヤー手札の役を評価する（互換用）。</summary>
+        public PokerRank EvaluateCurrentHand() => EvaluateHand(HandOwner.Player);
+
+        /// <summary>指定した所有者の手札役を評価する。</summary>
+        public PokerRank EvaluateHand(HandOwner owner) =>
+            HandEvaluator.Evaluate(owner == HandOwner.Player ? _playerHand : _enemyHand);
+
+        /// <summary>プレイヤー手札のみを配り直す（互換用）。</summary>
+        public void DealInitialHand() => DealInitialHand(HandOwner.Player);
+
+        /// <summary>指定した所有者の手札を配り直す。</summary>
+        public void DealInitialHand(HandOwner owner)
         {
-            if (index < 0 || index >= _hand.Cards.Count)
+            EnsureDeckHasEnoughCards(_handSize);
+            var hand = GetMutableHand(owner);
+            hand.Clear();
+            DrawToHand(hand, _handSize);
+        }
+
+        /// <summary>プレイヤーと敵に同時に手札を配る。</summary>
+        public void DealInitialHands()
+        {
+            EnsureDeckHasEnoughCards(_handSize * 2);
+            _playerHand.Clear();
+            _enemyHand.Clear();
+            DrawToHand(_playerHand, _handSize);
+            DrawToHand(_enemyHand, _handSize);
+        }
+
+        /// <summary>プレイヤー手札の指定カードを交換する（互換用）。</summary>
+        public void ReplaceCardAt(int index) => ReplaceCardAt(HandOwner.Player, index);
+
+        /// <summary>指定所有者の手札でカードを1枚引き直す。</summary>
+        public void ReplaceCardAt(HandOwner owner, int index)
+        {
+            var hand = GetMutableHand(owner);
+            if (index < 0 || index >= hand.Cards.Count)
             {
-                Debug.LogWarning($"ReplaceCardAt: index {index} is out of range.");
+                Debug.LogWarning($"ReplaceCardAt({owner}): index {index} is out of range.");
                 return;
             }
 
             EnsureDeckHasEnoughCards(1);
-            _hand.Cards[index] = _deck.Draw();
+            hand.Cards[index] = _deck.Draw();
         }
 
-        /// <summary>
-        /// 指定インデックス集合のカードを一度に引き直す。
-        /// </summary>
-        public void ReplaceCards(IEnumerable<int> indices)
+        /// <summary>プレイヤー手札の指定インデックス集合を交換する（互換用）。</summary>
+        public void ReplaceCards(IEnumerable<int> indices) => ReplaceCards(HandOwner.Player, indices);
+
+        /// <summary>指定所有者の手札で複数枚を一括交換する。</summary>
+        public void ReplaceCards(HandOwner owner, IEnumerable<int> indices)
         {
             if (indices == null)
             {
                 return;
             }
 
+            var hand = GetMutableHand(owner);
             var targets = indices
                 .Distinct()
-                .Where(i => i >= 0 && i < _hand.Cards.Count)
+                .Where(i => i >= 0 && i < hand.Cards.Count)
                 .ToArray();
 
             if (targets.Length == 0)
@@ -68,26 +108,31 @@ namespace Develop.Poker
 
             foreach (var index in targets)
             {
-                _hand.Cards[index] = _deck.Draw();
+                hand.Cards[index] = _deck.Draw();
             }
         }
 
         private void Awake()
         {
             _deck = new Deck(_includeJoker);
-            _hand = new Hand();
+            _playerHand = new Hand();
+            _enemyHand = new Hand();
         }
 
-        // 内部用: 手札に指定枚数のカードを引く。
-        private void DrawToHand(int count)
+        /// <summary>HandOwner に応じて書き込み可能な Hand を返す。</summary>
+        private Hand GetMutableHand(HandOwner owner) =>
+            owner == HandOwner.Player ? _playerHand : _enemyHand;
+
+        /// <summary>指定 Hand に山札から指定枚数を追加する。</summary>
+        private void DrawToHand(Hand hand, int count)
         {
             for (var i = 0; i < count; i++)
             {
-                _hand.Add(_deck.Draw());
+                hand.Add(_deck.Draw());
             }
         }
 
-        // 内部用: 山札に指定枚数以上のカードがなければリセットする。
+        /// <summary>必要枚数を満たせない場合は山札をリセットする。</summary>
         private void EnsureDeckHasEnoughCards(int requiredCards)
         {
             if (_deck.Count < requiredCards)

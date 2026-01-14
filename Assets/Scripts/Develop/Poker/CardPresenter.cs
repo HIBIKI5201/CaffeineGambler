@@ -6,18 +6,24 @@ using UnityEngine;
 namespace Develop.Poker
 {
     /// <summary>
-    /// PokerGameManager の状態を取得し、ビュー更新やログ出力を仲介するプレゼンター。
+    /// PokerGameManager のプレイヤー手札を対象に、UI からの操作とビュー更新を仲介するプレゼンター。
     /// </summary>
     public class CardPresenter : MonoBehaviour
     {
+        /// <summary>ゲーム全体の状態を管理するコンポーネント。</summary>
         [SerializeField] private PokerGameManager _gameManager;
+
+        /// <summary>カード一覧を描画するビュー。</summary>
         [SerializeField] private CardViewer _cardViewer;
-        /// <summary>役表示用ラベル。</summary>
+
+        /// <summary>役の名称を表示するラベル。</summary>
         [SerializeField] private TextMeshProUGUI _rankLabel;
+
+        /// <summary>現在選択中のカードインデックス。</summary>
         private readonly HashSet<int> _selectedIndices = new();
 
         /// <summary>
-        /// UI ボタンから呼び出し、現在の役と手札をログに出力する。
+        /// UI ボタンから呼び出し、現在の役と手札をデバッグログへ出力する。
         /// </summary>
         public void LogCurrentHandRank()
         {
@@ -32,7 +38,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ディールボタン用ハンドラー。手札を配り直しビューを更新する。
+        /// ディールボタン用ハンドラー。手札を配り直し、ビューを更新する。
         /// </summary>
         public void OnDealButton()
         {
@@ -56,7 +62,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 選択中のカードだけを引き直す。
+        /// 選択済みカードのみを引き直す。
         /// </summary>
         public void OnRedrawButton()
         {
@@ -64,13 +70,14 @@ namespace Develop.Poker
             {
                 return;
             }
+
             _gameManager.ReplaceCards(_selectedIndices);
             _selectedIndices.Clear();
             RefreshView();
         }
 
         /// <summary>
-        /// 個別カードボタンから呼び出し、選択状態をトグルする。
+        /// カード個別ボタンから呼び出し、指定インデックスの選択状態をトグルする。
         /// </summary>
         public void ToggleCardSelection(int index)
         {
@@ -92,7 +99,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 現在の手札と役をビューへ反映する。
+        /// 手札と役をビューへ反映する。
         /// </summary>
         public void RefreshView()
         {
@@ -116,7 +123,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 手札が表示可能な状態にあるか検証する。
+        /// 手札が表示・操作可能かどうかを検証する。
         /// </summary>
         private bool TryEnsureHandReady()
         {
@@ -125,21 +132,27 @@ namespace Develop.Poker
                 Debug.LogWarning("GameManager reference is missing.");
                 return false;
             }
+
             var hand = _gameManager.CurrentHand;
             if (hand == null || hand.Count == 0)
             {
                 Debug.LogWarning("Hand is empty. Call DealInitialHand before logging.");
                 return false;
             }
+
             return true;
         }
 
+        /// <summary>
+        /// 選択状態に応じてビューを再描画する。
+        /// </summary>
         private void UpdateSelectionVisuals()
         {
             if (!TryEnsureHandReady())
             {
                 return;
             }
+
             _cardViewer?.SetCards(_gameManager.CurrentHand, _selectedIndices);
         }
     }
