@@ -2,14 +2,18 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// PokerGameManager の状態を取得し、ビュー更新やログ出力を仲介するプレゼンター。
+/// </summary>
 public class CardPresenter : MonoBehaviour
 {
     [SerializeField] private PokerGameManager _gameManager;
     [SerializeField] private CardViewer _cardViewer;
+    /// <summary>役表示用ラベル。</summary>
     [SerializeField] private TextMeshProUGUI _rankLabel;
 
     /// <summary>
-    /// UI ボタンから呼び出し、現在の役をログに出力する。
+    /// UI ボタンから呼び出し、現在の役と手札をログに出力する。
     /// </summary>
     public void LogCurrentHandRank()
     {
@@ -23,12 +27,18 @@ public class CardPresenter : MonoBehaviour
         Debug.Log($"[Poker] Rank: {rank} | Cards: {cardsText}");
     }
 
+    /// <summary>
+    /// ディールボタン用ハンドラー。手札を配り直しビューを更新する。
+    /// </summary>
     public void OnDealButton()
     {
         _gameManager.DealInitialHand();
         RefreshView();
     }
 
+    /// <summary>
+    /// 役判定ボタン用ハンドラー。最新の役を UI に表示する。
+    /// </summary>
     public void OnEvaluateButton()
     {
         if (!TryEnsureHandReady())
@@ -40,6 +50,9 @@ public class CardPresenter : MonoBehaviour
         _rankLabel?.SetText(rank.ToString());
     }
 
+    /// <summary>
+    /// 現在の手札と役をビューへ反映する。
+    /// </summary>
     public void RefreshView()
     {
         if (!TryEnsureHandReady())
@@ -59,6 +72,9 @@ public class CardPresenter : MonoBehaviour
         RefreshView();
     }
 
+    /// <summary>
+    /// 手札が表示可能な状態にあるか検証する。
+    /// </summary>
     private bool TryEnsureHandReady()
     {
         if (_gameManager == null)
