@@ -21,7 +21,7 @@ public class CardViewer : MonoBehaviour
         }
     }
 
-    private static string FormatCard(Card card)
+    public static string FormatCard(Card card)
     {
         if (card.IsJoker)
         {
