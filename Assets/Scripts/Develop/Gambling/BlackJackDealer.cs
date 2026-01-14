@@ -1,6 +1,7 @@
 using UnityEngine;
 using Develop.Gambling.States;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Develop.Gambling
 {
@@ -18,14 +19,26 @@ namespace Develop.Gambling
         /// <summary>
         /// 依存関係を注入する初期化メソッド。
         /// </summary>
-        public void Initialize(BlackJackLogic logic, GamblingEconomy economy)
+        public void Initialize(BlackJackLogic logic, GamblingEconomy economy, DealerPresenter dealerPresenter)
         {
             _logic = logic;
             _economy = economy;
+            _dealerPresenter = dealerPresenter; // Assign the DealerPresenter
             
             // ステートマシンの生成と初期化
             _stateMachine = new BlackJackStateMachine();
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
+        }
+        public void RevealDealerHiddenCard()
+        {
+            _dealerPresenter.RevealDealerHiddenCard();
+        }
+        /// <summary>
+        /// 表示されているすべてのカードをクリアする。
+        /// </summary>
+        public void ClearAllCardsDisplayed()
+        {
+            _dealerPresenter.ClearDisplayedCards();
         }
 
         /// <summary>
@@ -65,17 +78,28 @@ namespace Develop.Gambling
         /// </summary>
         public void LogHandStatus()
         {
-            string pHand = string.Join(",", _logic.PlayerHand);
-            int pScore = _logic.CalculateScore(new List<int>(_logic.PlayerHand));
+            // Cardオブジェクトのリストを文字列に変換
+            string pHand = string.Join(",", _logic.PlayerHand.Select(card => card.ToString()));
+            int pScore = _logic.CalculateScore(_logic.PlayerHand);
             
-            string dHand = string.Join(",", _logic.DealerHand);
-            int dScore = _logic.CalculateScore(new List<int>(_logic.DealerHand));
+            string dHand = string.Join(",", _logic.DealerHand.Select(card => card.ToString()));
+            int dScore = _logic.CalculateScore(_logic.DealerHand);
 
             Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
+        }
+
+        /// <summary>
+        /// コルーチンを開始する。StateなどMonoBehaviourを継承していないクラスから利用する。
+        /// </summary>
+        /// <param name="coroutine">実行するコルーチン</param>
+        public void StartDealerCoroutine(System.Collections.IEnumerator coroutine)
+        {
+            StartCoroutine(coroutine);
         }
 
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;
         private BlackJackStateMachine _stateMachine;
+        private DealerPresenter _dealerPresenter; // New field for DealerPresenter
     }
 }
