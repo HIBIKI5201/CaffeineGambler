@@ -12,31 +12,39 @@ namespace Develop.Poker
         [SerializeField] private List<Button> _cardButtons;
         [SerializeField] private Color _normalColor = Color.white;
         [SerializeField] private Color _selectedColor = Color.yellow;
+        [SerializeField] private Color _hiddenColor= Color.gray;
+        [SerializeField] private string _hiddenCardLabel = "???";
+        [SerializeField] private bool _disableButtonsWhenHidden = true;
 
-        public void SetCards(IReadOnlyList<Card> cards, IReadOnlyCollection<int> selectedIndices = null)
+        public void SetCards(IReadOnlyList<Card> cards, IReadOnlyCollection<int> selectedIndices = null, bool revealCards = true)
         {
             ISet<int> selected = selectedIndices as ISet<int> ?? selectedIndices?.ToHashSet();
 
             for (var i = 0; i < _cardTexts.Count; i++)
             {
                 var text = _cardTexts[i];
+                var hasCard = cards != null && i < cards.Count;
 
-                if (cards != null && i < cards.Count)
-                {
-                    text.text = FormatCard(cards[i]);
-                }
-                else
-                {
-                    text.text = string.Empty;
-                }
-                var isSelected = selected != null && selected.Contains(i);
+                text.text = hasCard
+                    ? (revealCards ? FormatCard(cards[i]) : _hiddenCardLabel)
+                    : string.Empty;
+
+                var isSelected = revealCards && selected != null && selected.Contains(i);
+                var highlightColor = isSelected ? _selectedColor : _normalColor;
+                var visualColor = hasCard
+                    ? (revealCards ? highlightColor : _hiddenColor)
+                    : _normalColor;
+
+                text.color = visualColor;
+
                 if (_cardButtons != null && i < _cardButtons.Count && _cardButtons[i] != null)
                 {
-                    _cardButtons[i].image.color = isSelected ? _selectedColor : _normalColor;
-                }
-                else
-                {
-                    text.color = isSelected ? _selectedColor : _normalColor;
+                    var button = _cardButtons[i];
+                    button.image.color = visualColor;
+                    if (_disableButtonsWhenHidden)
+                    {
+                        button.interactable = revealCards && hasCard;
+                    }
                 }
             }
         }
