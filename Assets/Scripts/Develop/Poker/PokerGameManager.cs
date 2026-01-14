@@ -33,23 +33,6 @@ public class PokerGameManager : MonoBehaviour
     }
 
     /// <summary>
-    /// UI ボタンから呼び出し、カード情報をログに出力する。
-    /// </summary>
-    public void LogCardInfo()
-    {
-        if (!TryEnsureHandReady())
-        {
-            return;
-        }
-
-        for (var i = 0; i < _hand.Cards.Count; i++)
-        {
-            var cardText = FormatCard(_hand.Cards[i]);
-            Debug.Log($"[Poker] Card[{i}]: {cardText}");
-        }
-    }
-
-    /// <summary>
     /// 新しいラウンド用に手札を配り直す。
     /// </summary>
     public void DealInitialHand()
@@ -102,22 +85,6 @@ public class PokerGameManager : MonoBehaviour
         }
     }
 
-    private void DrawToHand(int count)
-    {
-        for (var i = 0; i < count; i++)
-        {
-            _hand.Add(_deck.Draw());
-        }
-    }
-
-    private void EnsureDeckHasEnoughCards(int requiredCards)
-    {
-        if (_deck.Count < requiredCards)
-        {
-            _deck.Reset(_includeJoker);
-        }
-    }
-
     private void Awake()
     {
         _deck = new Deck(_includeJoker);
@@ -129,6 +96,26 @@ public class PokerGameManager : MonoBehaviour
         DealInitialHand();
     }
 
+    // 内部用: 手札に指定枚数のカードを引く。
+    private void DrawToHand(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            _hand.Add(_deck.Draw());
+        }
+    }
+
+    // 内部用: 山札に指定枚数以上のカードがなければリセットする。
+    private void EnsureDeckHasEnoughCards(int requiredCards)
+    {
+        if (_deck.Count < requiredCards)
+        {
+            _deck.Reset(_includeJoker);
+            Debug.Log("[Poker] Deck was reset due to insufficient cards.");
+        }
+    }
+
+    // 内部用: 手札が準備できているか確認する。
     private bool TryEnsureHandReady()
     {
         if (_hand == null || _hand.Cards.Count == 0)
@@ -140,6 +127,7 @@ public class PokerGameManager : MonoBehaviour
         return true;
     }
 
+    // 内部用: カード情報を文字列にフォーマットする。
     private static string FormatCard(Card card)
     {
         if (card.IsJoker)
