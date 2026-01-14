@@ -3,14 +3,25 @@ using UnityEngine;
 namespace Develop.Gambling
 {
     /// <summary>
-    /// ギャンブルの経済バランス（配当倍率など）を保持する ScriptableObject。
-    /// クラスごとに設定を分離することで、プログラマー以外でもバランス調整を容易にするために必要。
+    ///     ギャンブルの経済バランス（配当倍率など）を保持する ScriptableObject。
+    ///     クラスごとに設定を分離することで、プログラマー以外でもバランス調整を容易にするために必要。
     /// </summary>
     [CreateAssetMenu(fileName = "GamblingEconomySettings", menuName = "Gambling/EconomySettings")]
     public class GamblingEconomySettings : ScriptableObject
     {
+        /// <summary>
+        ///     通常勝利時の配当倍率。
+        /// </summary>
         public int WinMultiplier => _winMultiplier;
+
+        /// <summary>
+        ///     ブラックジャック勝利時の配当倍率。
+        /// </summary>
         public int BlackJackMultiplier => _blackJackMultiplier;
+
+        /// <summary>
+        ///     引き分け時の返金倍率。
+        /// </summary>
         public int DrawMultiplier => _drawMultiplier;
 
         [Header("Payout Multipliers")]
