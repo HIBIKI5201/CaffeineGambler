@@ -69,6 +69,7 @@ public class CardPresenter : MonoBehaviour
 
     private void Start()
     {
+        _gameManager.DealInitialHand();
         RefreshView();
     }
 
