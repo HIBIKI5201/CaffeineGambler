@@ -9,20 +9,6 @@ namespace Develop.Poker
     /// </summary>
     public class PokerGameManager : MonoBehaviour
     {
-        /// <summary>手札の所有者を識別するための列挙体。</summary>
-        public enum HandOwner
-        {
-            Player,
-            Enemy
-        }
-
-        [SerializeField] private bool _includeJoker;
-        [SerializeField] private int _handSize = 5;
-
-        private Deck _deck;
-        private Hand _playerHand;
-        private Hand _enemyHand;
-
         /// <summary>後方互換用プロパティ。常にプレイヤー手札を返す。</summary>
         public IReadOnlyList<Card> CurrentHand => PlayerHand;
 
@@ -31,6 +17,20 @@ namespace Develop.Poker
 
         /// <summary>敵の現在手札。</summary>
         public IReadOnlyList<Card> EnemyHand => _enemyHand.Cards;
+
+        /// <summary>手札の所有者を識別するための列挙体。</summary>
+        public enum HandOwner
+        {
+            Player,
+            Enemy
+        }
+
+        public enum BattleResult
+        {
+            PlayerWin,
+            EnemyWin,
+            Draw
+        }
 
         /// <summary>指定した所有者の手札を返す。</summary>
         public IReadOnlyList<Card> GetHand(HandOwner owner) =>
@@ -111,6 +111,24 @@ namespace Develop.Poker
                 hand.Cards[index] = _deck.Draw();
             }
         }
+
+        /// <summary>プレイヤーと敵の役を比較して勝敗を返す。</summary>
+        public BattleResult ResolveBattle(out PokerRank playerRank, out PokerRank enemyRank)
+        {
+            playerRank = EvaluateHand(HandOwner.Player);
+            enemyRank = EvaluateHand(HandOwner.Enemy);
+
+            if (playerRank > enemyRank) return BattleResult.PlayerWin;
+            if (playerRank < enemyRank) return BattleResult.EnemyWin;
+            return BattleResult.Draw;
+        }
+
+        [SerializeField] private bool _includeJoker;
+        [SerializeField] private int _handSize = 5;
+
+        private Deck _deck;
+        private Hand _playerHand;
+        private Hand _enemyHand;
 
         private void Awake()
         {
