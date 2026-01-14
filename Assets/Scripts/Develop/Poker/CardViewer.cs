@@ -29,9 +29,7 @@ namespace Develop.Poker
                 {
                     text.text = string.Empty;
                 }
-
                 var isSelected = selected != null && selected.Contains(i);
-
                 if (_cardButtons != null && i < _cardButtons.Count && _cardButtons[i] != null)
                 {
                     _cardButtons[i].image.color = isSelected ? _selectedColor : _normalColor;
