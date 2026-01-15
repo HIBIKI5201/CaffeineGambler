@@ -33,7 +33,7 @@ namespace Develop.Upgrade
             }
 
             // プレイヤーの所持金が足りない場合、購入不可にする。
-            if (_playerData.TrySpendMoney(upgrade.Cost))
+            if (_playerData.TrySpendMoney(upgrade.GetCost()))
             {
                 // 強化を適用する。
                 upgrade.ApplyUpgrade();
