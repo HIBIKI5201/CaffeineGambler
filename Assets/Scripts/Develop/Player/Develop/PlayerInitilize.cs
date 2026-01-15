@@ -12,7 +12,7 @@ public class PlayerInitilize : MonoBehaviour
     private void Awake()
     {
         _playerData = new PlayerData(_initialMoney);
-        _playerPresenter.Init(_playerData, _playerViewer);
+        _playerPresenter.Init(_playerData);
     }
 
     private void OnDestroy()
