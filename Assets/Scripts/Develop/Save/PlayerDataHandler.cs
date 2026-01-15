@@ -1,4 +1,5 @@
 using Develop.Player;
+using System;
 using UnityEngine;
 
 namespace Develop.Save
@@ -8,31 +9,29 @@ namespace Develop.Save
     /// </summary>
     public class PlayerDataHandler
     {
-        public PlayerData PlayerData { get; private set; }
-
-        public void Load()
+        public void LoadAndApply(PlayerData target)
         {
-            int savedMoney = SaveData.LoadInt(PlayerData.MoneyKey, 1000);
-            PlayerData = new PlayerData(savedMoney);
-            Debug.Log($"Money loaded: {savedMoney}");
+            // Key‚Í PlayerData ‚ÌŒ^–¼AŽÀ‘Ì‚Í PlayerDataSave
+            var loadedSave = SaveData.LoadJson(
+                keyType: typeof(PlayerData),
+                defaultValue: new PlayerDataSave { Money = 1000 }
+            );
+
+            if (loadedSave == null)
+                return;
+
+            target.Money.Value = loadedSave.Money;
         }
-
-        public void Save()
+        public void Save(PlayerData playerData)
         {
-            if (PlayerData != null)
+            // PlayerData -> DTO
+            var save = new PlayerDataSave
             {
-                SaveData.SaveInt(PlayerData.MoneyKey, PlayerData.Money.Value);
-                Debug.Log($"Money saved: {PlayerData.Money.Value}");
-            }
-            else
-            {
-                Debug.LogWarning("PlayerData is null. Cannot save.");
-            }
-        }
+                Money = playerData.Money.Value
+            };
 
-        public void OnDestroy()
-        {
-            PlayerData?.OnDestroy();
+            // Key‚ÍPlayerData‚ÌŒ^–¼
+            SaveData.SaveJson(typeof(PlayerData), save);
         }
     }
 }
