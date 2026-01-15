@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Develop.Gambling.States;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,45 +7,55 @@ namespace Develop.Gambling
 {
     /// <summary>
     /// ブラックジャックの進行役（ディーラー）。
-    /// データ保持と外部インターフェースを担当し、状態遷移は StateMachine に委譲する。
+    /// Unityのコンポーネントとして存在し、状態遷移（StateMachine）とロジック、経済システム、表示層（Presenter）を繋ぐハブとなる。
     /// </summary>
     public class BlackJackDealer : MonoBehaviour
     {
-        // 外部からアクセス可能なプロパティ
         public BlackJackLogic Logic => _logic;
         public GamblingEconomy Economy => _economy;
         public int CurrentBetAmount { get; set; }
 
         /// <summary>
         /// 依存関係を注入する初期化メソッド。
+        /// Initializerから呼び出され、必要なすべてのサービスとプレゼンターをセットアップする。
         /// </summary>
         public void Initialize(BlackJackLogic logic, GamblingEconomy economy, DealerPresenter dealerPresenter)
         {
+            // 外部で生成されたロジックと経済システムを保持
             _logic = logic;
             _economy = economy;
-            _dealerPresenter = dealerPresenter; // Assign the DealerPresenter
+            _dealerPresenter = dealerPresenter;
             
-            // ステートマシンの生成と初期化
+            // ステートマシンの生成と初期化（最初の状態は待機状態）
             _stateMachine = new BlackJackStateMachine();
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
         }
+
+        /// <summary>
+        /// ディーラーの伏せカードを公開する。
+        /// </summary>
         public void RevealDealerHiddenCard()
         {
+            // 表示演出をプレゼンターに委譲
             _dealerPresenter.RevealDealerHiddenCard();
         }
+
         /// <summary>
         /// 表示されているすべてのカードをクリアする。
         /// </summary>
         public void ClearAllCardsDisplayed()
         {
+            // 画面上のカードオブジェクトをクリアすることをプレゼンターに指示
             _dealerPresenter.ClearDisplayedCards();
         }
 
         /// <summary>
         /// ゲームを開始し、賭け金を支払う。
         /// </summary>
+        /// <param name="betAmount">賭け金</param>
         public void StartGame(int betAmount)
         {
+            // 現在のステート（Idleなど）にベット操作を通知
             _stateMachine.CurrentState?.OnBet(betAmount);
         }
 
@@ -54,6 +64,7 @@ namespace Develop.Gambling
         /// </summary>
         public void Hit()
         {
+            // 現在のステート（PlayerTurnなど）にヒット操作を通知
             _stateMachine.CurrentState?.OnHit();
         }
 
@@ -62,6 +73,7 @@ namespace Develop.Gambling
         /// </summary>
         public void Stand()
         {
+            // 現在のステート（PlayerTurnなど）にスタンド操作を通知
             _stateMachine.CurrentState?.OnStand();
         }
 
@@ -70,36 +82,30 @@ namespace Develop.Gambling
         /// </summary>
         public void ResetBet()
         {
+            // 内部で保持している賭け金額を0に戻す
             CurrentBetAmount = 0;
         }
 
         /// <summary>
-        /// 現在の手札状況をログ出力（デバッグ用）
+        /// 現在の手札状況をログ出力（デバッグ用）。
         /// </summary>
         public void LogHandStatus()
         {
-            // Cardオブジェクトのリストを文字列に変換
-            string pHand = string.Join(",", _logic.PlayerHand.Select(card => card.ToString()));
-            int pScore = _logic.CalculateScore(_logic.PlayerHand);
+            // PlayerHand/DealerHandがBlackJackHandクラスになったため、Cardsプロパティを参照して文字列化
+            string pHand = string.Join(",", _logic.PlayerHand.Cards.Select(card => card.ToString()));
+            int pScore = _logic.CalculateScore(_logic.PlayerHand.Cards);
             
-            string dHand = string.Join(",", _logic.DealerHand.Select(card => card.ToString()));
-            int dScore = _logic.CalculateScore(_logic.DealerHand);
+            string dHand = string.Join(",", _logic.DealerHand.Cards.Select(card => card.ToString()));
+            int dScore = _logic.CalculateScore(_logic.DealerHand.Cards);
 
             Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
         }
 
-        /// <summary>
-        /// コルーチンを開始する。StateなどMonoBehaviourを継承していないクラスから利用する。
-        /// </summary>
-        /// <param name="coroutine">実行するコルーチン</param>
-        public void StartDealerCoroutine(System.Collections.IEnumerator coroutine)
-        {
-            StartCoroutine(coroutine);
-        }
+     
 
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;
         private BlackJackStateMachine _stateMachine;
-        private DealerPresenter _dealerPresenter; // New field for DealerPresenter
+        private DealerPresenter _dealerPresenter;
     }
 }
