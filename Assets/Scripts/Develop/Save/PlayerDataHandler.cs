@@ -5,13 +5,13 @@ using UnityEngine;
 namespace Develop.Save
 {
     /// <summary>
-    /// ƒvƒŒƒCƒ„[ƒf[ƒ^‘€ì—p‚ÌƒNƒ‰ƒXB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿æ“ä½œç”¨ã®ã‚¯ãƒ©ã‚¹ã€‚
     /// </summary>
     public class PlayerDataHandler
     {
         public void LoadAndApply(PlayerData target)
         {
-            // Key‚Í PlayerData ‚ÌŒ^–¼AÀ‘Ì‚Í PlayerDataSave
+            // Keyã¯ PlayerData ã®å‹åã€å®Ÿä½“ã¯ PlayerDataSave
             var loadedSave = SaveData.LoadJson(
                 keyType: typeof(PlayerData),
                 defaultValue: new PlayerDataSave { Money = 1000 }
@@ -24,13 +24,12 @@ namespace Develop.Save
         }
         public void Save(PlayerData playerData)
         {
-            // PlayerData -> DTO
             var save = new PlayerDataSave
             {
                 Money = playerData.Money.Value
             };
 
-            // Key‚ÍPlayerData‚ÌŒ^–¼
+            // Keyã¯PlayerDataã®å‹å
             SaveData.SaveJson(typeof(PlayerData), save);
         }
     }
