@@ -13,7 +13,7 @@ namespace Runtime.Save
         public void Init(PlayerData playerData)
         {
             _playerDataHandler = new PlayerDataHandler();
-            _playerDataHandler.LoadandApply(playerData);
+            _playerDataHandler.LoadAndApply(playerData);
         }
     }
 }
