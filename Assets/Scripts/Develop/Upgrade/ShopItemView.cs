@@ -21,7 +21,6 @@ namespace Develop.Upgrade
             _costText.text = upgrade.Cost.ToString();
             _buyButton.onClick.RemoveAllListeners();
             _buyButton.onClick.AddListener(onClick);
-            _buyButton.interactable = upgrade.Level < upgrade.MaxLevel;
         }
     }
 }
