@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 26542803}
   - component: {fileID: 26542802}
   m_Layer: 5
-  m_Name: Button (4)
+  m_Name: Battle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2280,7 +2280,7 @@ GameObject:
   - component: {fileID: 1118145849}
   - component: {fileID: 1118145848}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Deal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2678,7 +2678,7 @@ GameObject:
   - component: {fileID: 1240805248}
   - component: {fileID: 1240805247}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Deal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2723,7 +2723,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Refresh
+  m_text: Deal
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3720,6 +3720,8 @@ MonoBehaviour:
   _playerPresenter: {fileID: 531898456}
   _enemyPresenter: {fileID: 1756224575}
   _resultLabel: {fileID: 1112538046}
+  _dealButton: {fileID: 26542802}
+  _battleButton: {fileID: 26542802}
   _drawLabel: Draw
   _playerWinLabel: Player Wins!
   _enemyWinLabel: Enemy Wins!
@@ -3795,7 +3797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Duel
+  m_text: Battle
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -4613,7 +4615,7 @@ GameObject:
   - component: {fileID: 1973409928}
   - component: {fileID: 1973409927}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: Change
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
