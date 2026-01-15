@@ -1,16 +1,31 @@
+using Develop.Save;
+using TMPro;
+using UniRx;
 using UnityEngine;
 
-public class MoneyViwer : MonoBehaviour
+namespace Develop.Upgrade
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    /// <summary>
+    ///     お金表示クラス。
+    /// </summary>
+    public class MoneyViwer : MonoBehaviour
     {
-        
-    }
+        [SerializeField] private TextMeshProUGUI _moneyText;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private readonly CompositeDisposable _disposables = new();
+
+        public void Bind(PlayerData playerData)
+        {
+            _disposables.Clear();
+
+            playerData.Money
+                .Subscribe(m => _moneyText.text = m.ToString())
+                .AddTo(_disposables);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables.Dispose();
+        }
     }
 }
