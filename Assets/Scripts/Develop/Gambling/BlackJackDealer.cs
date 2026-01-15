@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿
 using Develop.Gambling.States;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace Develop.Gambling
     /// ブラックジャックの進行役（ディーラー）。
     /// Unityのコンポーネントとして存在し、状態遷移（StateMachine）とロジック、経済システム、表示層（Presenter）を繋ぐハブとなる。
     /// </summary>
-    public class BlackJackDealer : MonoBehaviour
+    public class BlackJackDealer 
     {
         public BlackJackLogic Logic => _logic;
         public GamblingEconomy Economy => _economy;
@@ -85,23 +85,6 @@ namespace Develop.Gambling
             // 内部で保持している賭け金額を0に戻す
             CurrentBetAmount = 0;
         }
-
-        /// <summary>
-        /// 現在の手札状況をログ出力（デバッグ用）。
-        /// </summary>
-        public void LogHandStatus()
-        {
-            // PlayerHand/DealerHandがBlackJackHandクラスになったため、Cardsプロパティを参照して文字列化
-            string pHand = string.Join(",", _logic.PlayerHand.Cards.Select(card => card.ToString()));
-            int pScore = _logic.CalculateScore(_logic.PlayerHand.Cards);
-            
-            string dHand = string.Join(",", _logic.DealerHand.Cards.Select(card => card.ToString()));
-            int dScore = _logic.CalculateScore(_logic.DealerHand.Cards);
-
-            Debug.Log($"Player: [{pHand}] ({pScore}) vs Dealer: [{dHand}] ({dScore})");
-        }
-
-     
 
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;
