@@ -1,9 +1,6 @@
-using Develop.Gambling;
-using Develop.Gambling.Develop;
 using Develop.Player;
-using UnityEngine;
-using UniRx;
 using Runtime.Gambling;
+using UnityEngine;
 namespace Runtime
 {
     /// <summary>
