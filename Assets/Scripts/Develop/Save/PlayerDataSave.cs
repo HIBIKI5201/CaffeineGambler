@@ -1,6 +1,14 @@
+using System;
 using UnityEngine;
-
-public class PlayerDataSave
+namespace Develop.Save
 {
-    
+    /// <summary>
+    /// プレイヤーデータ保存用のクラス。
+    /// </summary>
+    [Serializable]
+    public class PlayerDataSave
+    {
+        public int Money;
+    }
+
 }
