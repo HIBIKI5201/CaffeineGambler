@@ -1,16 +1,17 @@
+using Develop.Player;
 using UnityEngine;
 
-public class PokerInit : MonoBehaviour
+namespace Develop.Poker
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public class PokerInit : MonoBehaviour
     {
-        
-    }
+        [SerializeField] private int _initialMoney = 1000;
+        private PlayerData _playerData;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void Awake()
+        {
+            _playerData = new PlayerData(_initialMoney);
+        }
     }
 }
+
