@@ -4,7 +4,7 @@ using Develop.Save;
 namespace Runtime.Save
 {
     /// <summary>
-    /// ƒZ[ƒuƒf[ƒ^‚Ì‰Šú‰»‚ğs‚¤ƒNƒ‰ƒXB
+    /// ã‚»ãƒ¼ãƒ–ãƒ‡ãƒ¼ã‚¿ã®åˆæœŸåŒ–ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹ã€‚
     /// </summary>
     public class SaveInitializer
     {
@@ -14,6 +14,10 @@ namespace Runtime.Save
         {
             _playerDataHandler = new PlayerDataHandler();
             _playerDataHandler.LoadAndApply(playerData);
+        }
+        public void Save(PlayerData playerData)
+        {
+            _playerDataHandler.Save(playerData);
         }
     }
 }
