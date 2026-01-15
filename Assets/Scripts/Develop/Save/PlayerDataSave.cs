@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Develop.Save
 {
     /// <summary>
-    /// ƒvƒŒƒCƒ„[ƒf[ƒ^•Û‘¶—p‚ÌƒNƒ‰ƒXB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿ä¿å­˜ç”¨ã®ã‚¯ãƒ©ã‚¹ã€‚
     /// </summary>
     [Serializable]
     public class PlayerDataSave
