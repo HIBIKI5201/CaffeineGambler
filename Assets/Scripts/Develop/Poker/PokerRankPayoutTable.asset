@@ -12,4 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24d795ded54ade943a3287414144dd6b, type: 3}
   m_Name: PokerRankPayoutTable
   m_EditorClassIdentifier: Assembly-CSharp::Develop.Poker.PokerRankPayoutTable
-  _entries: []
+  _entries:
+  - Rank: 0
+    Multiplier: 1
+  - Rank: 1
+    Multiplier: 2
+  - Rank: 2
+    Multiplier: 3
+  - Rank: 3
+    Multiplier: 4
+  - Rank: 4
+    Multiplier: 5
+  - Rank: 5
+    Multiplier: 6
+  - Rank: 6
+    Multiplier: 7
+  - Rank: 7
+    Multiplier: 8
+  - Rank: 8
+    Multiplier: 9
