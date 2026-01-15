@@ -1,4 +1,3 @@
-using Develop.Player;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,13 +8,13 @@ namespace Develop.Player
     {
         private CompositeDisposable _disposables;
         private PlayerData _playerData;
+        [SerializeField]
         private PlayerViewer _playerViewer;
 
-        public void Init(PlayerData playerData, PlayerViewer playerViwer)
+        public void Init(PlayerData playerData)
         {
             _disposables = new CompositeDisposable();
             _playerData = playerData;
-            _playerViewer = playerViwer;
 
             _playerData.Money
                 .Subscribe(money => _playerViewer.SetCount(money))
