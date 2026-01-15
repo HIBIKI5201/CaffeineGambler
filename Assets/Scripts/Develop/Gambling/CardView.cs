@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Develop.Gambling
 {
@@ -6,28 +7,19 @@ namespace Develop.Gambling
     /// カードのGameObjectにアタッチし、見た目や挙動を制御するクラス。
     /// スプライトの表示や、カード情報の保持を担当する。
     /// </summary>
-    [RequireComponent(typeof(SpriteRenderer))]
+  //  [RequireComponent(typeof(SpriteRenderer))]
     public class CardView : MonoBehaviour
     {
         public Card CardData { get; private set; }
         public bool IsFaceUp { get; private set; }
-        /// <summary>
-        /// 現在の描画順を取得する
-        /// </summary>
-        public int SortingOrder
-        {
-            get
-            {
-                return _spriteRenderer.sortingOrder;
-            }
-        }
-        private SpriteRenderer _spriteRenderer;
+
+        private Image _image;
         private Sprite _frontSprite;
         private Sprite _backSprite;
 
         private void Awake()
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+           _image = GetComponent<Image>();
         }
 
         /// <summary>
@@ -43,7 +35,7 @@ namespace Develop.Gambling
             _backSprite = backSprite;
 
             IsFaceUp = false;
-            _spriteRenderer.sprite = _backSprite;
+            _image.sprite = _backSprite;
         }
 
         /// <summary>
@@ -52,19 +44,9 @@ namespace Develop.Gambling
         public void Flip()
         {
             IsFaceUp = !IsFaceUp;
-            _spriteRenderer.sprite = IsFaceUp ? _frontSprite : _backSprite;
+            _image.sprite = IsFaceUp ? _frontSprite : _backSprite;
         }
 
-        /// <summary>
-        /// スプライトの描画順を設定する。値が大きいほど手前に描画される。
-        /// </summary>
-        /// <param name="order">描画順の値</param>
-        public void SetSortingOrder(int order)
-        {
-            if (_spriteRenderer != null)
-            {
-                _spriteRenderer.sortingOrder = order;
-            }
-        }
+      
     }
 }
