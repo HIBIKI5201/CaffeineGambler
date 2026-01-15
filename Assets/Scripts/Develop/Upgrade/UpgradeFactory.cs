@@ -18,6 +18,7 @@ namespace Develop.Upgrade
             // 強化処理を実装したクラスをここで生成するようにしてください。
             List<IUpgrade> upgrades = new List<IUpgrade>
             {
+                new TestUpgrade()
             };
             return upgrades;
         }
