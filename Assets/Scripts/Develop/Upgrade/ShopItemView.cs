@@ -14,13 +14,11 @@ namespace Develop.Upgrade
         [SerializeField] private TMPro.TextMeshProUGUI _costText;
         [SerializeField] private UnityEngine.UI.Button _buyButton;
 
-        public void Set(IUpgrade upgrade, UnityEngine.Events.UnityAction onClick)
+        public void Set(IUpgrade upgrade)
         {
             _nameText.text = upgrade.Name;
             _levelText.text = $"Lv.{upgrade.Level}/{upgrade.MaxLevel}";
-            _costText.text = upgrade.Cost.ToString();
-            _buyButton.onClick.RemoveAllListeners();
-            _buyButton.onClick.AddListener(onClick);
+            _costText.text = $"Price{upgrade.GetCost()}";
         }
     }
 }
