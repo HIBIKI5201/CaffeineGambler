@@ -1,17 +1,13 @@
 using Develop.Player;
 using UnityEngine;
 
-public class PlayerInitilize : MonoBehaviour
+public class PlayerInitilizer : MonoBehaviour
 {
     [SerializeField] private PlayerPresenter _playerPresenter;
-    [SerializeField] private PlayerViewer _playerViewer;
-    [SerializeField] private int _initialMoney = 1000;
-
     private PlayerData _playerData;
-
-    private void Awake()
+    public void Init(PlayerData playerdata)
     {
-        _playerData = new PlayerData(_initialMoney);
+        _playerData = playerdata;
         _playerPresenter.Init(_playerData);
     }
 
