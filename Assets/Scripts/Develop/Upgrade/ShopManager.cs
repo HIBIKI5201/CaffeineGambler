@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Develop.Upgrade
 {
     /// <summary>
-    /// 
+    ///     ショップの生成などを行うマネージャークラス。
     /// </summary>
     public class ShopManager : MonoBehaviour
     {
@@ -15,6 +15,9 @@ namespace Develop.Upgrade
 
         private UpgradeShopService _upgradeShopService;
 
+        /// <summary> 初期化処理をする。 </summary>
+        /// <param name="playerData"></param>
+        /// <param name="upgrades"></param>
         public void Init(PlayerData playerData, IUpgrade[] upgrades)
         {
             _upgradeShopService = new UpgradeShopService(playerData);
@@ -25,6 +28,8 @@ namespace Develop.Upgrade
             }
         }
 
+        /// <summary> アイテムを生成する。</summary>
+        /// <param name="upgrade"></param>
         private void CreateItem(IUpgrade upgrade)
         {
             ShopItemView shopItemView = Instantiate(_shopItemViewPrefab, _contentRoot);
