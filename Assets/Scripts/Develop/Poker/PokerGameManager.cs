@@ -5,20 +5,14 @@ using UnityEngine;
 namespace Develop.Poker
 {
     /// <summary>
-    /// RD‚Ì¶¬‚ÆèD‚Ì”z•zEŒğŠ·‚ğˆêŒ³ŠÇ—‚µAƒvƒŒƒCƒ„[^“G‘o•û‚Ì–ğ”»’è‚ğ’ñ‹Ÿ‚·‚éƒQ[ƒ€ƒ}ƒl[ƒWƒƒ[B
+    /// å±±æœ­ã®ç”Ÿæˆã¨æ‰‹æœ­ã®é…å¸ƒãƒ»äº¤æ›ã€å½¹åˆ¤å®šã€å‹æ•—åˆ¤å®šã¾ã§ã‚’ä¸€æ‹¬ã§é¢å€’ã‚’è¦‹ã‚‹ã‚²ãƒ¼ãƒ ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚
     /// </summary>
     public class PokerGameManager : MonoBehaviour
     {
-        /// <summary>Œã•ûŒİŠ·—pƒvƒƒpƒeƒBBí‚ÉƒvƒŒƒCƒ„[èD‚ğ•Ô‚·B</summary>
         public IReadOnlyList<Card> CurrentHand => PlayerHand;
-
-        /// <summary>ƒvƒŒƒCƒ„[‚ÌŒ»İèDB</summary>
         public IReadOnlyList<Card> PlayerHand => _playerHand.Cards;
-
-        /// <summary>“G‚ÌŒ»İèDB</summary>
         public IReadOnlyList<Card> EnemyHand => _enemyHand.Cards;
 
-        /// <summary>èD‚ÌŠ—LÒ‚ğ¯•Ê‚·‚é‚½‚ß‚Ì—ñ‹“‘ÌB</summary>
         public enum HandOwner
         {
             Player,
@@ -32,21 +26,19 @@ namespace Develop.Poker
             Draw
         }
 
-        /// <summary>w’è‚µ‚½Š—LÒ‚ÌèD‚ğ•Ô‚·B</summary>
         public IReadOnlyList<Card> GetHand(HandOwner owner) =>
             owner == HandOwner.Player ? _playerHand.Cards : _enemyHand.Cards;
 
-        /// <summary>ƒvƒŒƒCƒ„[èD‚Ì–ğ‚ğ•]‰¿‚·‚éiŒİŠ·—pjB</summary>
         public PokerRank EvaluateCurrentHand() => EvaluateHand(HandOwner.Player);
 
-        /// <summary>w’è‚µ‚½Š—LÒ‚ÌèD–ğ‚ğ•]‰¿‚·‚éB</summary>
         public PokerRank EvaluateHand(HandOwner owner) =>
             HandEvaluator.Evaluate(owner == HandOwner.Player ? _playerHand : _enemyHand);
 
-        /// <summary>ƒvƒŒƒCƒ„[èD‚Ì‚İ‚ğ”z‚è’¼‚·iŒİŠ·—pjB</summary>
         public void DealInitialHand() => DealInitialHand(HandOwner.Player);
 
-        /// <summary>w’è‚µ‚½Š—LÒ‚ÌèD‚ğ”z‚è’¼‚·B</summary>
+        /// <summary>
+        /// æŒ‡å®šãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ‰‹æœ­ã‚’ã™ã¹ã¦æ¨ã¦ã€å±±æœ­ã‹ã‚‰æŒ‡å®šæšæ•°å¼•ãç›´ã™ã€‚
+        /// </summary>
         public void DealInitialHand(HandOwner owner)
         {
             EnsureDeckHasEnoughCards(_handSize);
@@ -55,7 +47,9 @@ namespace Develop.Poker
             DrawToHand(hand, _handSize);
         }
 
-        /// <summary>ƒvƒŒƒCƒ„[‚Æ“G‚É“¯‚ÉèD‚ğ”z‚éB</summary>
+        /// <summary>
+        /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ»æ•µã®é †ã§ã¾ã¨ã‚ã¦åˆæœŸæ‰‹æœ­ã‚’é…ã‚‹ã€‚
+        /// </summary>
         public void DealInitialHands()
         {
             EnsureDeckHasEnoughCards(_handSize * 2);
@@ -65,10 +59,11 @@ namespace Develop.Poker
             DrawToHand(_enemyHand, _handSize);
         }
 
-        /// <summary>ƒvƒŒƒCƒ„[èD‚Ìw’èƒJ[ƒh‚ğŒğŠ·‚·‚éiŒİŠ·—pjB</summary>
         public void ReplaceCardAt(int index) => ReplaceCardAt(HandOwner.Player, index);
 
-        /// <summary>w’èŠ—LÒ‚ÌèD‚ÅƒJ[ƒh‚ğ1–‡ˆø‚«’¼‚·B</summary>
+        /// <summary>
+        /// æŒ‡å®šã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®ã‚«ãƒ¼ãƒ‰1æšã ã‘ã‚’å·®ã—æ›¿ãˆã‚‹ã€‚
+        /// </summary>
         public void ReplaceCardAt(HandOwner owner, int index)
         {
             var hand = GetMutableHand(owner);
@@ -82,10 +77,11 @@ namespace Develop.Poker
             hand.Cards[index] = _deck.Draw();
         }
 
-        /// <summary>ƒvƒŒƒCƒ„[èD‚Ìw’èƒCƒ“ƒfƒbƒNƒXW‡‚ğŒğŠ·‚·‚éiŒİŠ·—pjB</summary>
         public void ReplaceCards(IEnumerable<int> indices) => ReplaceCards(HandOwner.Player, indices);
 
-        /// <summary>w’èŠ—LÒ‚ÌèD‚Å•¡”–‡‚ğˆêŠ‡ŒğŠ·‚·‚éB</summary>
+        /// <summary>
+        /// ãƒãƒ³ãƒ‰ã‚ªãƒ¼ãƒŠãƒ¼ã¨ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é›†åˆã‚’æŒ‡å®šã—ã€ä¸€æ‹¬ã§å¼•ãç›´ã™ã€‚
+        /// </summary>
         public void ReplaceCards(HandOwner owner, IEnumerable<int> indices)
         {
             if (indices == null)
@@ -112,18 +108,28 @@ namespace Develop.Poker
             }
         }
 
-        /// <summary>ƒvƒŒƒCƒ„[‚Æ“G‚Ì–ğ‚ğ”äŠr‚µ‚ÄŸ”s‚ğ•Ô‚·B</summary>
+        /// <summary>
+        /// å½¹ â†’ ã‚­ãƒƒã‚«ãƒ¼é †ã§æ¯”è¼ƒã—ã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨æ•µã®å‹æ•—ã‚’è¿”ã™ã€‚
+        /// </summary>
         public BattleResult ResolveBattle(out PokerRank playerRank, out PokerRank enemyRank)
         {
-            playerRank = EvaluateHand(HandOwner.Player);
-            enemyRank = EvaluateHand(HandOwner.Enemy);
+            var playerStrength = CalculateStrength(_playerHand);
+            var enemyStrength = CalculateStrength(_enemyHand);
+
+            playerRank = playerStrength.Rank;
+            enemyRank = enemyStrength.Rank;
 
             if (playerRank > enemyRank) return BattleResult.PlayerWin;
             if (playerRank < enemyRank) return BattleResult.EnemyWin;
+
+            var kickerCompare = CompareRankValues(playerStrength.RankValues, enemyStrength.RankValues);
+            if (kickerCompare > 0) return BattleResult.PlayerWin;
+            if (kickerCompare < 0) return BattleResult.EnemyWin;
+
             return BattleResult.Draw;
         }
 
-        [SerializeField] private bool _includeJoker;
+        [SerializeField] private bool _includeJoker = false; // Poker ã§ã¯å¸¸ã« false ãŒæƒ³å®šã€‚
         [SerializeField] private int _handSize = 5;
 
         private Deck _deck;
@@ -137,11 +143,9 @@ namespace Develop.Poker
             _enemyHand = new Hand();
         }
 
-        /// <summary>HandOwner ‚É‰‚¶‚Ä‘‚«‚İ‰Â”\‚È Hand ‚ğ•Ô‚·B</summary>
         private Hand GetMutableHand(HandOwner owner) =>
             owner == HandOwner.Player ? _playerHand : _enemyHand;
 
-        /// <summary>w’è Hand ‚ÉRD‚©‚çw’è–‡”‚ğ’Ç‰Á‚·‚éB</summary>
         private void DrawToHand(Hand hand, int count)
         {
             for (var i = 0; i < count; i++)
@@ -150,7 +154,9 @@ namespace Develop.Poker
             }
         }
 
-        /// <summary>•K—v–‡”‚ğ–‚½‚¹‚È‚¢ê‡‚ÍRD‚ğƒŠƒZƒbƒg‚·‚éB</summary>
+        /// <summary>
+        /// å±±æœ­æ®‹æ•°ãŒè¶³ã‚Šãªã„ã¨ãã¯è‡ªå‹•ã§å†æ§‹ç¯‰ï¼ˆã‚·ãƒ£ãƒƒãƒ•ãƒ«ï¼‰ã™ã‚‹ã€‚
+        /// </summary>
         private void EnsureDeckHasEnoughCards(int requiredCards)
         {
             if (_deck.Count < requiredCards)
@@ -158,6 +164,156 @@ namespace Develop.Poker
                 _deck.Reset(_includeJoker);
                 Debug.Log("[Poker] Deck was reset due to insufficient cards.");
             }
+        }
+
+        // --- ä»¥ä¸‹ã€å‹æ•—æ¯”è¼ƒç”¨ã®å†…éƒ¨ãƒ˜ãƒ«ãƒ‘ãƒ¼ ---
+
+        private HandStrength CalculateStrength(Hand hand)
+        {
+            var rank = HandEvaluator.Evaluate(hand);
+            var rankValues = new List<int>();
+
+            var orderedCards = hand.Cards
+                .OrderByDescending(c => c.Rank)
+                .ToList();
+
+            var orderedRanks = orderedCards
+                .Select(c => c.Rank)
+                .ToList();
+
+            var groupInfos = hand.Cards
+                .GroupBy(c => c.Rank)
+                .Select(g => new GroupInfo(g.Key, g.Count()))
+                .ToList();
+
+            var quads = groupInfos.Where(g => g.Count == 4).OrderByDescending(g => g.Rank).Select(g => g.Rank).ToList();
+            var triples = groupInfos.Where(g => g.Count == 3).OrderByDescending(g => g.Rank).Select(g => g.Rank).ToList();
+            var pairs = groupInfos.Where(g => g.Count == 2).OrderByDescending(g => g.Rank).Select(g => g.Rank).ToList();
+
+            switch (rank)
+            {
+                case PokerRank.StraightFlush:
+                case PokerRank.Straight:
+                    rankValues.Add(GetStraightHighCard(orderedRanks));
+                    break;
+                case PokerRank.FourOfAKind:
+                    rankValues.Add(quads[0]);
+                    AddRemainingRanks(rankValues, orderedRanks, quads[0]);
+                    break;
+                case PokerRank.FullHouse:
+                    rankValues.Add(triples[0]);
+                    rankValues.Add(pairs[0]);
+                    break;
+                case PokerRank.Flush:
+                    rankValues.AddRange(orderedRanks);
+                    break;
+                case PokerRank.ThreeOfAKind:
+                    rankValues.Add(triples[0]);
+                    AddRemainingRanks(rankValues, orderedRanks, triples[0]);
+                    break;
+                case PokerRank.TwoPair:
+                    rankValues.Add(pairs[0]);
+                    rankValues.Add(pairs[1]);
+                    AddRemainingRanks(rankValues, orderedRanks, pairs[0], pairs[1]);
+                    break;
+                case PokerRank.OnePair:
+                    rankValues.Add(pairs[0]);
+                    AddRemainingRanks(rankValues, orderedRanks, pairs[0]);
+                    break;
+                default:
+                    rankValues.AddRange(orderedRanks);
+                    break;
+            }
+
+            return new HandStrength(rank, rankValues);
+        }
+
+        private static void AddRemainingRanks(List<int> destination, IReadOnlyList<int> orderedRanks, params int[] excludedRanks)
+        {
+            for (var i = 0; i < orderedRanks.Count; i++)
+            {
+                var rank = orderedRanks[i];
+                var skip = false;
+
+                for (var j = 0; j < excludedRanks.Length; j++)
+                {
+                    if (rank == excludedRanks[j])
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+
+                if (!skip)
+                {
+                    destination.Add(rank);
+                }
+            }
+        }
+
+        private static int CompareRankValues(IReadOnlyList<int> left, IReadOnlyList<int> right)
+        {
+            var length = left.Count < right.Count ? left.Count : right.Count;
+            for (var i = 0; i < length; i++)
+            {
+                if (left[i] == right[i])
+                {
+                    continue;
+                }
+
+                return left[i] > right[i] ? 1 : -1;
+            }
+
+            if (left.Count == right.Count)
+            {
+                return 0;
+            }
+
+            return left.Count > right.Count ? 1 : -1;
+        }
+
+        private static int GetStraightHighCard(IReadOnlyList<int> orderedRanks)
+        {
+            if (orderedRanks.Count < 5)
+            {
+                return orderedRanks.Count > 0 ? orderedRanks[0] : 0;
+            }
+
+            // 5-high ã‚¹ãƒˆãƒ¬ãƒ¼ãƒˆï¼ˆA2345ï¼‰ã ã‘ç‰¹ä¾‹ã§ 5 ã‚’ãƒã‚¤ã‚«ãƒ¼ãƒ‰ã¨ã—ã¦æ‰±ã†ã€‚
+            if (orderedRanks[0] == 14 &&
+                orderedRanks[1] == 5 &&
+                orderedRanks[2] == 4 &&
+                orderedRanks[3] == 3 &&
+                orderedRanks[4] == 2)
+            {
+                return 5;
+            }
+
+            return orderedRanks[0];
+        }
+
+        private readonly struct HandStrength
+        {
+            public HandStrength(PokerRank rank, List<int> rankValues)
+            {
+                Rank = rank;
+                RankValues = rankValues;
+            }
+
+            public PokerRank Rank { get; }
+            public List<int> RankValues { get; }
+        }
+
+        private readonly struct GroupInfo
+        {
+            public GroupInfo(int rank, int count)
+            {
+                Rank = rank;
+                Count = count;
+            }
+
+            public int Rank { get; }
+            public int Count { get; }
         }
     }
 }
