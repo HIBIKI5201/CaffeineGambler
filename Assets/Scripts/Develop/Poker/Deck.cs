@@ -4,26 +4,27 @@ using System.Collections.Generic;
 namespace Develop.Poker
 {
     /// <summary>
-    /// ƒ|[ƒJ[—p‚ÌRD‚ğ¶¬EƒVƒƒƒbƒtƒ‹E”z‚éÓ–±‚ğ‚ÂƒNƒ‰ƒXB
+    /// 52æšï¼ˆã‚¸ãƒ§ãƒ¼ã‚«ãƒ¼ç„¡ã—ï¼‰ã®ãƒ‡ãƒƒã‚­ã‚’ç”Ÿæˆãƒ»ã‚·ãƒ£ãƒƒãƒ•ãƒ«ãƒ»ä¾›çµ¦ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã€‚
     /// </summary>
     public class Deck
     {
         /// <summary>
-        /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^[Bì¬‚Æ“¯‚ÉRD‚ğ‰Šú‰»‚·‚éB
+        /// ç”Ÿæˆã¨åŒæ™‚ã«ãƒ‡ãƒƒã‚­ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
         /// </summary>
-        /// <param name="includeJoker">ƒWƒ‡[ƒJ[‚ğŠÜ‚ß‚é‚©B</param>
+        /// <param name="includeJoker">
+        /// true ã«ã™ã‚‹ã¨ã‚¸ãƒ§ãƒ¼ã‚«ãƒ¼ã‚’å«ã‚€ã€‚Poker ãƒ¢ãƒ¼ãƒ‰ã§ã¯å¸¸ã« false é‹ç”¨ãªã®ã§ãƒ‡ãƒãƒƒã‚°ç”¨é€”ã®ã¿ã€‚
+        /// </param>
         public Deck(bool includeJoker = false) => Reset(includeJoker);
 
         private readonly List<Card> _cards = new();
         private readonly Random _random = new();
 
-        /// <summary>c‚èƒJ[ƒh–‡”B</summary>
+        /// <summary>ç¾åœ¨ã®å±±æœ­æšæ•°ã€‚</summary>
         public int Count => _cards.Count;
 
         /// <summary>
-        /// RD‚ğ‚·‚×‚ÄÄ¶¬‚µAƒVƒƒƒbƒtƒ‹‚·‚éB
+        /// å±±æœ­ã‚’ã™ã¹ã¦æ¨ã¦ã¦æ‰€å®šã®ã‚«ãƒ¼ãƒ‰ã‚’ç©ã¿ç›´ã—ã€ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã™ã‚‹ã€‚
         /// </summary>
-        /// <param name="includeJoker">ƒWƒ‡[ƒJ[‚ğŠÜ‚ß‚é‚©B</param>
         public void Reset(bool includeJoker)
         {
             _cards.Clear();
@@ -32,6 +33,7 @@ namespace Develop.Poker
             {
                 if (suit == Suit.Joker)
                 {
+                    // Poker ãƒ¢ãƒ¼ãƒ‰ã§ã¯ã‚¸ãƒ§ãƒ¼ã‚«ãƒ¼ã‚’ä½¿ã‚ãªã„ãŸã‚é€šå¸¸ã¯ã“ã“ã‚’é€šã‚‰ãªã„ã€‚
                     if (includeJoker)
                     {
                         _cards.Add(new Card { Suit = Suit.Joker, Rank = 0, IsJoker = true });
@@ -50,7 +52,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// RD‚Ìˆê”Ôã‚©‚çƒJ[ƒh‚ğ1–‡ˆø‚­B
+        /// å±±æœ­ã®æœ«å°¾ã‹ã‚‰ã‚«ãƒ¼ãƒ‰ã‚’1æšå¼•ãæŠœãè¿”ã™ã€‚
         /// </summary>
         public Card Draw()
         {
@@ -60,7 +62,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// Fisher?Yates ƒAƒ‹ƒSƒŠƒYƒ€‚ÅRD‚ğƒVƒƒƒbƒtƒ‹‚·‚éB
+        /// Fisherâ€“Yates ã§å±±æœ­å…¨ä½“ã‚’ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã™ã‚‹ã€‚
         /// </summary>
         private void Shuffle()
         {

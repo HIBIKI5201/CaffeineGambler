@@ -1,80 +1,180 @@
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using TMPro;
 using UnityEngine;
 
 namespace Develop.Poker
 {
     /// <summary>
-    /// PokerGameManager �̏�Ԃ��擾���A�r���[�X�V�⃍�O�o�͂𒇉��v���[���^�[�B
+    /// 手札描画と操作を担当するプレゼンター。
     /// </summary>
     public class CardPresenter : MonoBehaviour
     {
+        /// <summary>役判定や配札イベントを発行するゲームマネージャー。</summary>
         [SerializeField] private PokerGameManager _gameManager;
+
+        /// <summary>このプレゼンターが担当する手札の所有者。</summary>
+        [SerializeField] private PokerGameManager.HandOwner _handOwner = PokerGameManager.HandOwner.Player;
+
+        /// <summary>カード一覧を表示するビュー。</summary>
         [SerializeField] private CardViewer _cardViewer;
-        /// <summary>��\���p���x���B</summary>
+
+        /// <summary>役名を表示するラベル。</summary>
         [SerializeField] private TextMeshProUGUI _rankLabel;
+
+        /// <summary>初期状態で手札を公開するか。</summary>
+        [SerializeField] private bool _revealCards = true;
+
+        /// <summary>カードの選択操作を許可するか。</summary>
+        [SerializeField] private bool _allowSelection = true;
+
+        /// <summary>開始時に自動で配札するか。</summary>
+        [SerializeField] private bool _autoDealOnStart = true;
+
+        /// <summary>伏せ表示時に使用するプレースホルダー文字列。</summary>
+        [SerializeField] private string _hiddenRankLabel = "???";
+
+        /// <summary>選択されているカードインデックス集合。</summary>
         private readonly HashSet<int> _selectedIndices = new();
 
+        /// <summary>UniRx 購読のまとめて破棄用。</summary>
+        private readonly CompositeDisposable _disposables = new();
+
+        /// <summary>初期公開状態の退避。</summary>
+        private bool _initialRevealState;
+
+        private void Awake()
+        {
+            _initialRevealState = _revealCards;
+
+            // HandUpdated を購読し、担当手札だけ UI を再描画する。
+            if (_gameManager != null)
+            {
+                _gameManager.HandUpdated
+                    .Where(owner => owner == _handOwner)
+                    .Subscribe(_ => RefreshView())
+                    .AddTo(_disposables);
+            }
+        }
+
+        private void OnDestroy() => _disposables.Dispose();
+
         /// <summary>
-        /// UI �{�^������Ăяo���A���݂̖��Ǝ�D�����O�ɏo�͂���B
+        /// 手札の公開／非公開状態を切り替える。
+        /// </summary>
+        public void SetRevealState(bool revealCards, bool refreshImmediately = true)
+        {
+            if (_revealCards == revealCards)
+            {
+                if (refreshImmediately)
+                {
+                    RefreshView();
+                }
+
+                return;
+            }
+
+            _revealCards = revealCards;
+
+            if (!_revealCards)
+            {
+                _selectedIndices.Clear();
+            }
+
+            if (refreshImmediately)
+            {
+                RefreshView();
+            }
+            else if (!_revealCards)
+            {
+                UpdateRankLabel(false);
+            }
+        }
+
+        /// <summary>
+        /// Awake 時点の公開状態へ戻すショートカット。
+        /// </summary>
+        public void ResetRevealState(bool refreshImmediately = true) =>
+            SetRevealState(_initialRevealState, refreshImmediately);
+
+        /// <summary>
+        /// 現在の手札と役をコンソールへログ出力する。
         /// </summary>
         public void LogCurrentHandRank()
         {
+            if (!_revealCards)
+            {
+                Debug.LogWarning($"[{_handOwner}] Hand is hidden. Enable reveal to log details.");
+                return;
+            }
+
             if (!TryEnsureHandReady())
             {
                 return;
             }
 
-            var rank = _gameManager.EvaluateCurrentHand();
-            var cardsText = string.Join(", ", _gameManager.CurrentHand.Select(CardViewer.FormatCard));
-            Debug.Log($"[Poker] Rank: {rank} | Cards: {cardsText}");
+            var rank = _gameManager.EvaluateHand(_handOwner);
+            var cardsText = string.Join(", ", _gameManager.GetHand(_handOwner).Select(CardViewer.FormatCard));
+            Debug.Log($"[Poker][{_handOwner}] Rank: {rank} | Cards: {cardsText}");
         }
 
         /// <summary>
-        /// �f�B�[���{�^���p�n���h���[�B��D��z�蒼���r���[���X�V����B
+        /// 単独のディールボタンから呼ばれる配札処理。
         /// </summary>
         public void OnDealButton()
         {
             _selectedIndices.Clear();
-            _gameManager.DealInitialHand();
+            _gameManager.DealInitialHand(_handOwner);
             RefreshView();
         }
 
         /// <summary>
-        /// �𔻒�{�^���p�n���h���[�B�ŐV�̖��� UI �ɕ\������B
+        /// 役表示ボタン対応。伏せ表示なら何もしない。
         /// </summary>
         public void OnEvaluateButton()
         {
+            if (!_revealCards)
+            {
+                UpdateRankLabel(false);
+                return;
+            }
+
             if (!TryEnsureHandReady())
             {
                 return;
             }
 
-            var rank = _gameManager.EvaluateCurrentHand();
-            _rankLabel?.SetText(rank.ToString());
+            UpdateRankLabel(true);
         }
 
         /// <summary>
-        /// �I�𒆂̃J�[�h���������������B
+        /// 選択されたカードを引き直す。
         /// </summary>
         public void OnRedrawButton()
         {
-            if (!TryEnsureHandReady() || _selectedIndices.Count == 0)
+            if (!_allowSelection || _selectedIndices.Count == 0 || !TryEnsureHandReady())
             {
                 return;
             }
-            _gameManager.ReplaceCards(_selectedIndices);
+
+            _gameManager.ReplaceCards(_handOwner, _selectedIndices);
             _selectedIndices.Clear();
             RefreshView();
         }
 
         /// <summary>
-        /// �ʃJ�[�h�{�^������Ăяo���A�I����Ԃ��g�O������B
+        /// UI 上のカード選択トグルを処理。
         /// </summary>
         public void ToggleCardSelection(int index)
         {
-            if (!TryEnsureHandReady() || index < 0 || index >= _gameManager.CurrentHand.Count)
+            if (!_allowSelection || !_revealCards || !TryEnsureHandReady())
+            {
+                return;
+            }
+
+            var hand = _gameManager.GetHand(_handOwner);
+            if (index < 0 || index >= hand.Count)
             {
                 return;
             }
@@ -92,55 +192,106 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ���݂̎�D�Ɩ����r���[�֔��f����B
+        /// CardViewer と役ラベルを最新の手札で描画する。
         /// </summary>
         public void RefreshView()
         {
-            if (!TryEnsureHandReady())
+            if (!TryEnsureHandReady(allowEmpty: true))
             {
                 _cardViewer?.SetCards(null);
-                _rankLabel?.SetText("-");
+                UpdateRankLabel(false);
                 _selectedIndices.Clear();
                 return;
             }
 
-            var currentHand = _gameManager.CurrentHand;
-            _cardViewer?.SetCards(currentHand, _selectedIndices);
-            _rankLabel?.SetText(_gameManager.EvaluateCurrentHand().ToString());
+            var hand = _gameManager.GetHand(_handOwner);
+            if (hand == null || hand.Count == 0)
+            {
+                _cardViewer?.SetCards(null);
+                UpdateRankLabel(false);
+                _selectedIndices.Clear();
+                return;
+            }
+
+            if (!_allowSelection)
+            {
+                _selectedIndices.Clear();
+            }
+
+            var selection = (_allowSelection && _revealCards) ? _selectedIndices : null;
+            _cardViewer?.SetCards(hand, selection, _revealCards);
+            UpdateRankLabel(_revealCards);
         }
 
         private void Start()
         {
-            _gameManager.DealInitialHand();
+            if (_autoDealOnStart && _gameManager != null)
+            {
+                _gameManager.DealInitialHand(_handOwner);
+            }
+
             RefreshView();
         }
 
         /// <summary>
-        /// ��D���\���\�ȏ�Ԃɂ��邩���؂���B
+        /// マネージャー参照や手札の存在を検証する共通ヘルパー。
         /// </summary>
-        private bool TryEnsureHandReady()
+            private bool TryEnsureHandReady(bool allowEmpty = false)
         {
             if (_gameManager == null)
             {
                 Debug.LogWarning("GameManager reference is missing.");
                 return false;
             }
-            var hand = _gameManager.CurrentHand;
-            if (hand == null || hand.Count == 0)
+
+            var hand = _gameManager.GetHand(_handOwner);
+            if (hand == null)
             {
-                Debug.LogWarning("Hand is empty. Call DealInitialHand before logging.");
+                Debug.LogWarning($"[{_handOwner}] Hand reference is missing.");
                 return false;
             }
+
+            if (!allowEmpty && hand.Count == 0)
+            {
+                Debug.LogWarning($"[{_handOwner}] Hand is empty. Deal cards first.");
+                return false;
+            }
+
             return true;
         }
 
+        /// <summary>
+        /// 選択状態と公開状態に応じてビューへ反映する。
+        /// </summary>
         private void UpdateSelectionVisuals()
         {
             if (!TryEnsureHandReady())
             {
                 return;
             }
-            _cardViewer?.SetCards(_gameManager.CurrentHand, _selectedIndices);
+
+            var selection = (_allowSelection && _revealCards) ? _selectedIndices : null;
+            _cardViewer?.SetCards(_gameManager.GetHand(_handOwner), selection, _revealCards);
+        }
+
+        /// <summary>
+        /// 役ラベルを公開／非公開状態に合わせて更新する。
+        /// </summary>
+        private void UpdateRankLabel(bool revealed)
+        {
+            if (_rankLabel == null)
+            {
+                return;
+            }
+
+            if (!revealed)
+            {
+                _rankLabel.SetText(_hiddenRankLabel);
+                return;
+            }
+
+            var rank = _gameManager.EvaluateHand(_handOwner);
+            _rankLabel.SetText(rank.ToString());
         }
     }
 }
