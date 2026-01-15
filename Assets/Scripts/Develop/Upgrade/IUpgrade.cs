@@ -13,8 +13,8 @@ namespace Develop.Upgrade
         int Level { get; }
         /// <summary> アップグレードの最大レベル。</summary>
         int MaxLevel { get; }
-        /// <summary> アップグレードのコスト。</summary>
-        int Cost { get; }
+        /// <summary> アップグレードにかかるコストを取得する。 </summary>
+        int GetCost();
         /// <summary> アップグレードを適用する。 </summary>
         void ApplyUpgrade();
     }
