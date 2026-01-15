@@ -14,6 +14,7 @@ namespace Develop.Upgrade
         [SerializeField] private TMPro.TextMeshProUGUI _costText;
         [SerializeField] private UnityEngine.UI.Button _buyButton;
 
+        /// <summary> アップグレード情報をセットする。 </summary>
         public void Set(IUpgrade upgrade)
         {
             _nameText.text = upgrade.Name;
