@@ -1,4 +1,4 @@
-using Develop.Player;
+using Develop.Save;
 using System.Collections.Generic;
 namespace Develop.Upgrade
 {
@@ -18,7 +18,8 @@ namespace Develop.Upgrade
             // 強化処理を実装したクラスをここで生成するようにしてください。
             List<IUpgrade> upgrades = new List<IUpgrade>
             {
-                new TestUpgrade()
+                new TestUpgrade(),
+                new AutoProductionUpgrade()
             };
             return upgrades;
         }
