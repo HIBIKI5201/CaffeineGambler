@@ -1,44 +1,105 @@
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using TMPro;
 using UnityEngine;
 
 namespace Develop.Poker
 {
     /// <summary>
-    /// w’èƒnƒ“ƒhiƒvƒŒƒCƒ„[^“Gj‚Ì‘€ì‚Æ•\¦XV‚ği‚éƒvƒŒƒ[ƒ“ƒ^[B
+    /// æ‰‹æœ­æç”»ã¨æ“ä½œã‚’æ‹…å½“ã™ã‚‹ãƒ—ãƒ¬ã‚¼ãƒ³ã‚¿ãƒ¼ã€‚
     /// </summary>
     public class CardPresenter : MonoBehaviour
     {
-        /// <summary>ƒQ[ƒ€‘S‘Ì‚Ìó‘Ô‚ğ’ñ‹Ÿ‚·‚éƒ}ƒl[ƒWƒƒ[B</summary>
+        /// <summary>å½¹åˆ¤å®šã‚„é…æœ­ã‚¤ãƒ™ãƒ³ãƒˆã‚’ç™ºè¡Œã™ã‚‹ã‚²ãƒ¼ãƒ ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼ã€‚</summary>
         [SerializeField] private PokerGameManager _gameManager;
 
-        /// <summary>‚±‚ÌƒvƒŒƒ[ƒ“ƒ^[‚ªˆµ‚¤èD‚ÌŠ—LÒB</summary>
+        /// <summary>ã“ã®ãƒ—ãƒ¬ã‚¼ãƒ³ã‚¿ãƒ¼ãŒæ‹…å½“ã™ã‚‹æ‰‹æœ­ã®æ‰€æœ‰è€…ã€‚</summary>
         [SerializeField] private PokerGameManager.HandOwner _handOwner = PokerGameManager.HandOwner.Player;
 
-        /// <summary>ƒJ[ƒhˆê——‚ğ•\¦‚·‚éƒrƒ…[B</summary>
+        /// <summary>ã‚«ãƒ¼ãƒ‰ä¸€è¦§ã‚’è¡¨ç¤ºã™ã‚‹ãƒ“ãƒ¥ãƒ¼ã€‚</summary>
         [SerializeField] private CardViewer _cardViewer;
 
-        /// <summary>–ğ–¼‚ğ•\¦‚·‚é TextMeshPro ƒ‰ƒxƒ‹B</summary>
+        /// <summary>å½¹åã‚’è¡¨ç¤ºã™ã‚‹ãƒ©ãƒ™ãƒ«ã€‚</summary>
         [SerializeField] private TextMeshProUGUI _rankLabel;
 
-        /// <summary>ƒJ[ƒh“à—e‚ğŒöŠJ‚·‚é‚©i“G‘¤‚È‚ç falsejB</summary>
+        /// <summary>åˆæœŸçŠ¶æ…‹ã§æ‰‹æœ­ã‚’å…¬é–‹ã™ã‚‹ã‹ã€‚</summary>
         [SerializeField] private bool _revealCards = true;
 
-        /// <summary>ƒJ[ƒh‘I‘ğ‚¨‚æ‚Ñˆø‚«’¼‚µ‘€ì‚ğ‹–‰Â‚·‚é‚©B</summary>
+        /// <summary>ã‚«ãƒ¼ãƒ‰ã®é¸æŠæ“ä½œã‚’è¨±å¯ã™ã‚‹ã‹ã€‚</summary>
         [SerializeField] private bool _allowSelection = true;
 
-        /// <summary>ŠJn‚É©“®‚Å”zD‚·‚é‚©B</summary>
+        /// <summary>é–‹å§‹æ™‚ã«è‡ªå‹•ã§é…æœ­ã™ã‚‹ã‹ã€‚</summary>
         [SerializeField] private bool _autoDealOnStart = true;
 
-        /// <summary>–¢ŒöŠJ‚É–ğƒ‰ƒxƒ‹‚Ö•\¦‚·‚é•¶š—ñB</summary>
+        /// <summary>ä¼ã›è¡¨ç¤ºæ™‚ã«ä½¿ç”¨ã™ã‚‹ãƒ—ãƒ¬ãƒ¼ã‚¹ãƒ›ãƒ«ãƒ€ãƒ¼æ–‡å­—åˆ—ã€‚</summary>
         [SerializeField] private string _hiddenRankLabel = "???";
 
-        /// <summary>UI ã‚Å‘I‘ğó‘Ô‚É‚ ‚éƒJ[ƒh‚ÌƒCƒ“ƒfƒbƒNƒXW‡B</summary>
+        /// <summary>é¸æŠã•ã‚Œã¦ã„ã‚‹ã‚«ãƒ¼ãƒ‰ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é›†åˆã€‚</summary>
         private readonly HashSet<int> _selectedIndices = new();
 
+        /// <summary>UniRx è³¼èª­ã®ã¾ã¨ã‚ã¦ç ´æ£„ç”¨ã€‚</summary>
+        private readonly CompositeDisposable _disposables = new();
+
+        /// <summary>åˆæœŸå…¬é–‹çŠ¶æ…‹ã®é€€é¿ã€‚</summary>
+        private bool _initialRevealState;
+
+        private void Awake()
+        {
+            _initialRevealState = _revealCards;
+
+            // HandUpdated ã‚’è³¼èª­ã—ã€æ‹…å½“æ‰‹æœ­ã ã‘ UI ã‚’å†æç”»ã™ã‚‹ã€‚
+            if (_gameManager != null)
+            {
+                _gameManager.HandUpdated
+                    .Where(owner => owner == _handOwner)
+                    .Subscribe(_ => RefreshView())
+                    .AddTo(_disposables);
+            }
+        }
+
+        private void OnDestroy() => _disposables.Dispose();
+
         /// <summary>
-        /// Œ»İ‚Ì–ğ‚ÆèD‚ğƒfƒoƒbƒOƒƒO‚Öo—Í‚·‚éi”ñŒöŠJƒ‚[ƒh‚Å‚ÍŒx‚Ì‚İjB
+        /// æ‰‹æœ­ã®å…¬é–‹ï¼éå…¬é–‹çŠ¶æ…‹ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹ã€‚
+        /// </summary>
+        public void SetRevealState(bool revealCards, bool refreshImmediately = true)
+        {
+            if (_revealCards == revealCards)
+            {
+                if (refreshImmediately)
+                {
+                    RefreshView();
+                }
+
+                return;
+            }
+
+            _revealCards = revealCards;
+
+            if (!_revealCards)
+            {
+                _selectedIndices.Clear();
+            }
+
+            if (refreshImmediately)
+            {
+                RefreshView();
+            }
+            else if (!_revealCards)
+            {
+                UpdateRankLabel(false);
+            }
+        }
+
+        /// <summary>
+        /// Awake æ™‚ç‚¹ã®å…¬é–‹çŠ¶æ…‹ã¸æˆ»ã™ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã€‚
+        /// </summary>
+        public void ResetRevealState(bool refreshImmediately = true) =>
+            SetRevealState(_initialRevealState, refreshImmediately);
+
+        /// <summary>
+        /// ç¾åœ¨ã®æ‰‹æœ­ã¨å½¹ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã¸ãƒ­ã‚°å‡ºåŠ›ã™ã‚‹ã€‚
         /// </summary>
         public void LogCurrentHandRank()
         {
@@ -59,7 +120,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ƒfƒB[ƒ‹ƒ{ƒ^ƒ“Œo—R‚ÅŒÄ‚Ño‚³‚êA‘ÎÛèD‚ğ”z‚è’¼‚·B
+        /// å˜ç‹¬ã®ãƒ‡ã‚£ãƒ¼ãƒ«ãƒœã‚¿ãƒ³ã‹ã‚‰å‘¼ã°ã‚Œã‚‹é…æœ­å‡¦ç†ã€‚
         /// </summary>
         public void OnDealButton()
         {
@@ -69,7 +130,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// –ğ”»’èƒ{ƒ^ƒ“‚ÅŒÄ‚Ño‚³‚êA–ğ•\¦ƒ‰ƒxƒ‹‚ğXV‚·‚éB
+        /// å½¹è¡¨ç¤ºãƒœã‚¿ãƒ³å¯¾å¿œã€‚ä¼ã›è¡¨ç¤ºãªã‚‰ä½•ã‚‚ã—ãªã„ã€‚
         /// </summary>
         public void OnEvaluateButton()
         {
@@ -88,7 +149,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ‘I‘ğÏ‚İƒJ[ƒh‚Ì‚İ‚ğ’u‚«Š·‚¦‚éi‘I‘ğ•s‰Âƒ‚[ƒh‚Å‚Í–³‹jB
+        /// é¸æŠã•ã‚ŒãŸã‚«ãƒ¼ãƒ‰ã‚’å¼•ãç›´ã™ã€‚
         /// </summary>
         public void OnRedrawButton()
         {
@@ -103,7 +164,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ŒÂ•ÊƒJ[ƒh UI ‚©‚çŒÄ‚Ño‚µA‘I‘ğó‘Ô‚ğƒgƒOƒ‹‚·‚éB
+        /// UI ä¸Šã®ã‚«ãƒ¼ãƒ‰é¸æŠãƒˆã‚°ãƒ«ã‚’å‡¦ç†ã€‚
         /// </summary>
         public void ToggleCardSelection(int index)
         {
@@ -131,7 +192,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// èD‚Æ–ğ•\¦‚ğƒrƒ…[‚Ö”½‰f‚·‚éi“G‘¤‚Í•š‚¹D•–ğƒ‰ƒxƒ‹”ñŒöŠJjB
+        /// CardViewer ã¨å½¹ãƒ©ãƒ™ãƒ«ã‚’æœ€æ–°ã®æ‰‹æœ­ã§æç”»ã™ã‚‹ã€‚
         /// </summary>
         public void RefreshView()
         {
@@ -173,9 +234,9 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// èDQÆ‚ª—LŒø‚©A–‡”‚ª0‚Å‚Í‚È‚¢‚©‚ğŒŸØ‚·‚éB
+        /// ãƒãƒãƒ¼ã‚¸ãƒ£ãƒ¼å‚ç…§ã‚„æ‰‹æœ­ã®å­˜åœ¨ã‚’æ¤œè¨¼ã™ã‚‹å…±é€šãƒ˜ãƒ«ãƒ‘ãƒ¼ã€‚
         /// </summary>
-        private bool TryEnsureHandReady(bool allowEmpty = false)
+            private bool TryEnsureHandReady(bool allowEmpty = false)
         {
             if (_gameManager == null)
             {
@@ -200,7 +261,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ‘I‘ğó‘Ô‚É‡‚í‚¹‚Ä CardViewer ‚ğÄ•`‰æ‚·‚éB
+        /// é¸æŠçŠ¶æ…‹ã¨å…¬é–‹çŠ¶æ…‹ã«å¿œã˜ã¦ãƒ“ãƒ¥ãƒ¼ã¸åæ˜ ã™ã‚‹ã€‚
         /// </summary>
         private void UpdateSelectionVisuals()
         {
@@ -214,7 +275,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// –ğ•\¦ƒ‰ƒxƒ‹‚ğŒöŠJ^”ñŒöŠJ‚Ìİ’è‚É‰‚¶‚ÄXV‚·‚éB
+        /// å½¹ãƒ©ãƒ™ãƒ«ã‚’å…¬é–‹ï¼éå…¬é–‹çŠ¶æ…‹ã«åˆã‚ã›ã¦æ›´æ–°ã™ã‚‹ã€‚
         /// </summary>
         private void UpdateRankLabel(bool revealed)
         {

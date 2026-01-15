@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 
 namespace Develop.Poker
@@ -12,6 +14,7 @@ namespace Develop.Poker
         public IReadOnlyList<Card> CurrentHand => PlayerHand;
         public IReadOnlyList<Card> PlayerHand => _playerHand.Cards;
         public IReadOnlyList<Card> EnemyHand => _enemyHand.Cards;
+        public IObservable<HandOwner> HandUpdated => _handUpdated;
 
         public enum HandOwner
         {
@@ -39,13 +42,8 @@ namespace Develop.Poker
         /// <summary>
         /// 指定プレイヤーの手札をすべて捨て、山札から指定枚数引き直す。
         /// </summary>
-        public void DealInitialHand(HandOwner owner)
-        {
-            EnsureDeckHasEnoughCards(_handSize);
-            var hand = GetMutableHand(owner);
-            hand.Clear();
-            DrawToHand(hand, _handSize);
-        }
+        public void DealInitialHand(HandOwner owner) =>
+            MutateHand(owner, _handSize, RefillHand);
 
         /// <summary>
         /// プレイヤー・敵の順でまとめて初期手札を配る。
@@ -53,10 +51,11 @@ namespace Develop.Poker
         public void DealInitialHands()
         {
             EnsureDeckHasEnoughCards(_handSize * 2);
-            _playerHand.Clear();
-            _enemyHand.Clear();
-            DrawToHand(_playerHand, _handSize);
-            DrawToHand(_enemyHand, _handSize);
+            RefillHand(_playerHand);
+            NotifyHandUpdated(HandOwner.Player);
+
+            RefillHand(_enemyHand);
+            NotifyHandUpdated(HandOwner.Enemy);
         }
 
         public void ReplaceCardAt(int index) => ReplaceCardAt(HandOwner.Player, index);
@@ -67,14 +66,13 @@ namespace Develop.Poker
         public void ReplaceCardAt(HandOwner owner, int index)
         {
             var hand = GetMutableHand(owner);
-            if (index < 0 || index >= hand.Cards.Count)
+            if (!IsValidCardIndex(hand, index))
             {
                 Debug.LogWarning($"ReplaceCardAt({owner}): index {index} is out of range.");
                 return;
             }
 
-            EnsureDeckHasEnoughCards(1);
-            hand.Cards[index] = _deck.Draw();
+            MutateHand(owner, hand, 1, h => h.Cards[index] = _deck.Draw());
         }
 
         public void ReplaceCards(IEnumerable<int> indices) => ReplaceCards(HandOwner.Player, indices);
@@ -92,7 +90,7 @@ namespace Develop.Poker
             var hand = GetMutableHand(owner);
             var targets = indices
                 .Distinct()
-                .Where(i => i >= 0 && i < hand.Cards.Count)
+                .Where(i => IsValidCardIndex(hand, i))
                 .ToArray();
 
             if (targets.Length == 0)
@@ -100,12 +98,34 @@ namespace Develop.Poker
                 return;
             }
 
-            EnsureDeckHasEnoughCards(targets.Length);
-
-            foreach (var index in targets)
+            MutateHand(owner, hand, targets.Length, h =>
             {
-                hand.Cards[index] = _deck.Draw();
+                foreach (var index in targets)
+                {
+                    h.Cards[index] = _deck.Draw();
+                }
+            });
+        }
+
+        /// <summary>
+        /// 指定した手札をランク降順／スート昇順に並べ替える。
+        /// </summary>
+        public void SortHand(HandOwner owner)
+        {
+            var hand = GetMutableHand(owner);
+            if (hand?.Cards == null || hand.Cards.Count <= 1)
+            {
+                return;
             }
+
+            MutateHand(owner, hand, 0, h =>
+            {
+                h.Cards.Sort((left, right) =>
+                {
+                    var rankComparison = right.Rank.CompareTo(left.Rank);
+                    return rankComparison != 0 ? rankComparison : left.Suit.CompareTo(right.Suit);
+                });
+            });
         }
 
         /// <summary>
@@ -135,6 +155,7 @@ namespace Develop.Poker
         private Deck _deck;
         private Hand _playerHand;
         private Hand _enemyHand;
+        private readonly Subject<HandOwner> _handUpdated = new();
 
         private void Awake()
         {
@@ -143,8 +164,16 @@ namespace Develop.Poker
             _enemyHand = new Hand();
         }
 
+        private void OnDestroy()
+        {
+            _handUpdated.OnCompleted();
+            _handUpdated.Dispose();
+        }
+
         private Hand GetMutableHand(HandOwner owner) =>
             owner == HandOwner.Player ? _playerHand : _enemyHand;
+
+        private void NotifyHandUpdated(HandOwner owner) => _handUpdated.OnNext(owner);
 
         private void DrawToHand(Hand hand, int count)
         {
@@ -159,15 +188,45 @@ namespace Develop.Poker
         /// </summary>
         private void EnsureDeckHasEnoughCards(int requiredCards)
         {
-            if (_deck.Count < requiredCards)
+            if (requiredCards <= 0 || _deck.Count >= requiredCards)
             {
-                _deck.Reset(_includeJoker);
-                Debug.Log("[Poker] Deck was reset due to insufficient cards.");
+                return;
             }
+
+            _deck.Reset(_includeJoker);
+            Debug.Log("[Poker] Deck was reset due to insufficient cards.");
+        }
+
+        private void RefillHand(Hand hand)
+        {
+            hand.Clear();
+            DrawToHand(hand, _handSize);
+        }
+
+        private static bool IsValidCardIndex(Hand hand, int index) =>
+            hand != null && index >= 0 && index < hand.Cards.Count;
+
+        private void MutateHand(HandOwner owner, int requiredDeckCards, Action<Hand> mutation) =>
+            MutateHand(owner, GetMutableHand(owner), requiredDeckCards, mutation);
+
+        private void MutateHand(HandOwner owner, Hand hand, int requiredDeckCards, Action<Hand> mutation)
+        {
+            if (hand == null)
+            {
+                Debug.LogWarning($"[{owner}] Hand reference is missing.");
+                return;
+            }
+
+            if (requiredDeckCards > 0)
+            {
+                EnsureDeckHasEnoughCards(requiredDeckCards);
+            }
+
+            mutation(hand);
+            NotifyHandUpdated(owner);
         }
 
         // --- 以下、勝敗比較用の内部ヘルパー ---
-
         private HandStrength CalculateStrength(Hand hand)
         {
             var rank = HandEvaluator.Evaluate(hand);
@@ -253,7 +312,7 @@ namespace Develop.Poker
 
         private static int CompareRankValues(IReadOnlyList<int> left, IReadOnlyList<int> right)
         {
-            var length = left.Count < right.Count ? left.Count : right.Count;
+            var length = Math.Min(left.Count, right.Count);
             for (var i = 0; i < length; i++)
             {
                 if (left[i] == right[i])
