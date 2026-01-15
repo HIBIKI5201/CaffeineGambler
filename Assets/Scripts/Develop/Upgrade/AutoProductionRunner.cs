@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-
+using Develop.Player;
 namespace Develop.Upgrade
 {
     /// <summary>

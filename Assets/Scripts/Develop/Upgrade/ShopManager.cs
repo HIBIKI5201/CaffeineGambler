@@ -2,6 +2,7 @@ using System;
 using UniRx;
 using Develop.Save;
 using UnityEngine;
+using Develop.Player;
 
 namespace Develop.Upgrade
 {
