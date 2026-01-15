@@ -3,6 +3,9 @@ using DG.Tweening;
 
 namespace Develop.Upgrade
 {
+    /// <summary>
+    ///     ショップのUIコントローラークラス。
+    /// </summary>
     public class ShopUIController : MonoBehaviour
     {
         [SerializeField] private RectTransform _shopPanel;
@@ -13,6 +16,7 @@ namespace Develop.Upgrade
         private bool _isOpen = false;
         private Tween _currentTween;
 
+        /// <summary> ショップの開閉をする。 </summary>
         private void ToggleShopPanel()
         {
             _currentTween?.Kill();
