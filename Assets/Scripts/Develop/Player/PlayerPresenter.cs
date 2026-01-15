@@ -30,7 +30,6 @@ namespace Develop.Player
         private void OnDestroy()
         {
             _disposables?.Dispose();
-            _playerData?.OnDestroy();
         }
     }
 }
