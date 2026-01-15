@@ -1,58 +1,92 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Develop.Player;
 using UniRx;
 
 namespace Develop.Gambling.Develop
 {
     /// <summary>
-    ///     ギャンブルシステムの初期化を行うクラス。
-    ///     ScriptableObject を含む依存関係の注入(DI)を担当する。
+    /// ギャンブルシステムの初期化を行うクラス。
+    /// Pureなロジッククラスのインスタンス化と、MonoBehaviourへの依存注入(DI)を一括で担当する。
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public class GamblingInitialize : MonoBehaviour
     {
         [Header("Settings")]
         [SerializeField] private BlackJackSettings _blackJackSettings;
         [SerializeField] private GamblingEconomySettings _economySettings;
+
+        [Header("UI & Presentation")]
         [SerializeField] private UiPresenter _uiPresenter;
+        [SerializeField] private DealerPresenter _dealerPresenter;
 
         private const int InitialPlayerMoney = 1000;
         private BlackJackDealer _dealer;
 
+        /// <summary>
+        /// UnityのAwakeライフサイクルでシステム全体の構築を行う。
+        /// </summary>
         private void Awake()
         {
-            // ゲームに必要な設定ファイルが存在するか確認するため
+            // 必要な設定ファイルとプレゼンターの存在チェック。不備があれば早期リターン
+            if (!ValidateDependencies()) return;
+
+            // 1. データの生成（Pure Data）
+            var playerData = new PlayerData(InitialPlayerMoney);
+            
+            // UIとの同期設定
+            playerData.Money
+                .Subscribe(money => _uiPresenter.UpdateMoneyDisplay(money))
+                .AddTo(this);
+            
+            // 2. Pureな計算・判定ロジックの生成（Pure Logic）
+            var scoreCalculator = new BlackJackScoreCalculator(_blackJackSettings);
+            var resultDeterminer = new BlackJackResultDeterminer(scoreCalculator);
+            
+            // 3. 状態管理・進行ロジックの生成
+            var bjLogic = new BlackJackLogic(_blackJackSettings, scoreCalculator, resultDeterminer);
+            var economy = new GamblingEconomy(playerData, _economySettings);
+
+            var dealer = new BlackJackDealer(
+                bjLogic,
+                economy,
+                _dealerPresenter
+            );
+
+
+            // 5. 各プレゼンターに操作対象のディーラーをセット
+            _uiPresenter.SetDealer(dealer);
+            _dealerPresenter.SetDealer(dealer);
+
+            Debug.Log("Gambling System Initialized via manual Dependency Injection.");
+        }
+
+        /// <summary>
+        /// インスペクターで設定された依存関係が有効か検証する。
+        /// </summary>
+        /// <returns>すべて有効なら true</returns>
+        private bool ValidateDependencies()
+        {
             if (_blackJackSettings == null)
             {
-                Debug.LogError("BlackJackSettings が設定されていません。初期化を中止します。");
-                return;
+                Debug.LogError("BlackJackSettings が未設定です。");
+                return false;
             }
             if (_economySettings == null)
             {
-                Debug.LogError("GamblingEconomySettings が設定されていません。初期化を中止します。");
-                return;
+                Debug.LogError("GamblingEconomySettings が未設定です。");
+                return false;
             }
-
-            // プレイヤーの所持金データを生成し、UIと同期させるため
-            PlayerData playerData = new PlayerData(InitialPlayerMoney);
-            playerData.Money.Subscribe(money =>
+            if (_uiPresenter == null)
             {
-                _uiPresenter.UpdateMoneyDisplay(money);
-            })
-            .AddTo(this);
-            
-            // ロケーターを使用してディーラーとその依存関係を一括で解決（生成・初期化）するため
-            _dealer = BlackJackDealerLocator.Resolve(_blackJackSettings, _economySettings, playerData);
-
-            // UIがディーラーを操作できるように参照を渡すため
-            _uiPresenter.SetDealer(_dealer);
-
-            Debug.Log("Gambling System Initialized using Locator.");
-        }
-
-        private void OnDestroy()
-        {
-            // シーン遷移や終了時に参照をクリアするため
-            BlackJackDealerLocator.Clear();
+                Debug.LogError("UiPresenter が未設定です。");
+                return false;
+            }
+            if (_dealerPresenter == null)
+            {
+                Debug.LogError("DealerPresenter が未設定です。");
+                return false;
+            }
+            return true;
         }
     }
 }

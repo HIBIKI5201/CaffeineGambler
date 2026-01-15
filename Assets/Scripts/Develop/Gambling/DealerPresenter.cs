@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Develop.Gambling
@@ -10,7 +11,7 @@ namespace Develop.Gambling
     public class DealerPresenter : MonoBehaviour
     {
         [Tooltip("ロジック層への参照を持つディーラー本体")]
-        [SerializeField] private BlackJackDealer _dealer;
+        [SerializeField] private BlackJackDealer _dealer; // Private field, will be set by SetDealer method
         
         [Tooltip("カードの3D配置を管理するコントローラー")]
         [SerializeField] private CardPlacementController _placementController;
@@ -24,18 +25,17 @@ namespace Develop.Gambling
         [Tooltip("カードのスプライトを一元管理するリポジトリ")]
         [SerializeField] private CardSpriteRepository _cardSpriteRepository;
 
-        private void Start()
-        {
-            // ゲームロジックのイベントを購読
-            if (_dealer != null && _dealer.Logic != null)
-            {
-                _dealer.Logic.OnCardDealt += HandleCardDealt;
-            }
-            else
-            {
-                Debug.LogError("BlackJackDealerまたはBlackJackLogicが設定されていません。", this);
-            }
-        }
+        private List<GameObject> _instantiatedCards = new List<GameObject>(); // New: Keep track of all instantiated cards
+
+
+        [Header("Card Placement Settings")]
+        [Tooltip("カード間の水平方向の間隔 (X軸オフセット)")]
+        [SerializeField] private float _cardHorizontalOffset = 0.15f;
+        [Tooltip("カード間の奥行き方向の間隔 (Z軸オフセット)。手前に来るほどマイナスの値")]
+        [SerializeField] private float _cardDepthOffset = -0.01f;
+
+        // Startはイベント購読をSetDealerに任せるため、ここでは何もしない
+        private void Start() { }
 
         private void OnDestroy()
         {
@@ -43,6 +43,33 @@ namespace Develop.Gambling
             if (_dealer != null && _dealer.Logic != null)
             {
                 _dealer.Logic.OnCardDealt -= HandleCardDealt;
+            }
+            ClearDisplayedCards(); // Ensure all cards are destroyed on presenter destruction
+        }
+        
+        /// <summary>
+        /// 外部からBlackJackDealerインスタンスを設定し、イベント購読を開始する。
+        /// </summary>
+        /// <param name="dealer">設定するBlackJackDealerインスタンス</param>
+        public void SetDealer(BlackJackDealer dealer)
+        {
+            // 既に設定されている場合は一度購読解除
+            if (_dealer != null && _dealer.Logic != null)
+            {
+                _dealer.Logic.OnCardDealt -= HandleCardDealt;
+            }
+
+            _dealer = dealer;
+
+            // 新しいディーラーインスタンスのイベントを購読
+            if (_dealer != null && _dealer.Logic != null)
+            {
+                _dealer.Logic.OnCardDealt += HandleCardDealt;
+            }
+            else
+            {
+                // ここでエラーが出た場合はSetDealer呼び出し時に問題がある
+                Debug.LogError("SetDealer: BlackJackDealerまたはBlackJackLogicが正しく設定されていません。", this);
             }
         }
         
@@ -68,7 +95,14 @@ namespace Develop.Gambling
                 Debug.LogError("カードのプレハブが設定されていません。", this);
                 return;
             }
-            GameObject cardObject = Instantiate(_cardPrefab, _placementController.DealerCardOrigin.position, _placementController.DealerCardOrigin.rotation);
+            // UI表示のために親を指定して生成
+            GameObject cardObject = Instantiate(_cardPrefab, _placementController.DealerCardOrigin);
+            _instantiatedCards.Add(cardObject); // Add card to tracking list
+
+            // 位置・回転・スケールをリセット
+            cardObject.transform.localPosition = Vector3.zero;
+            cardObject.transform.localRotation = Quaternion.identity;
+            cardObject.transform.localScale = Vector3.one;
 
             // 3. CardViewにスプライトと値を設定
             CardView cardView = cardObject.GetComponent<CardView>();
@@ -95,14 +129,27 @@ namespace Develop.Gambling
             // _dealerAnimator.SetTrigger("Deal");
 
             // 移動先の決定
-            Transform destinationParent = target == GamblingParticipant.Player 
+            RectTransform destinationParent = target == GamblingParticipant.Player 
                 ? _placementController.PlayerHandContainer 
                 : _placementController.DealerHandContainer;
             
             // 手札コンテナ内のカード数に基づいて、新しいカードのローカル位置を決定
-            //（ここでは単純に横に並べる例）
-            // ※カードが追加される前にDestinationが確定するので、childCountは現在の枚数を示す
-            Vector3 targetLocalPosition = new Vector3(destinationParent.childCount * 0.15f, 0, 0);
+            // 論理的なカード数を取得 (BlackJackLogicから)
+            int logicalCardCount = 0;
+            if (target == GamblingParticipant.Player)
+            {
+                logicalCardCount = _dealer.Logic.PlayerHand.Cards.Count;
+            }
+            else if (target == GamblingParticipant.Dealer)
+            {
+                logicalCardCount = _dealer.Logic.DealerHand.Cards.Count;
+            }
+            
+            Vector3 targetLocalPosition = new Vector3(
+                (logicalCardCount - 1) * _cardHorizontalOffset,
+                0,
+                (logicalCardCount - 1) * _cardDepthOffset
+            );
 
             // カードを指定時間かけて目的地まで移動
             float elapsedTime = 0f;
@@ -111,6 +158,13 @@ namespace Develop.Gambling
 
             while (elapsedTime < _cardDealDuration)
             {
+                // If the card was destroyed during the animation (e.g., due to game reset/bust),
+                // stop the animation to prevent MissingReferenceException.
+                if (cardObject == null)
+                {
+                    yield break; // Exit the coroutine
+                }
+
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / _cardDealDuration);
 
@@ -125,18 +179,63 @@ namespace Develop.Gambling
             cardObject.transform.localPosition = targetLocalPosition;
             cardObject.transform.localRotation = Quaternion.identity;
             
+            // Debug: ログを出力
+           
+            
+            
             // カードを配り終えたアニメーションをトリガー（将来的な拡張箇所）
             // _dealerAnimator.SetTrigger("Idle");
 
-            // 例：ディーラーの2枚目のカードは伏せておく、などのロジックをここに追加できる
-            // if(target == GamblingParticipant.Dealer && destinationParent.childCount == 2)
-            // {
-            //     // そのまま（裏面のまま）
-            // }
-            // else
-            // {
-            //     cardObject.GetComponent<CardView>().Flip();
-            // }
+            if (target == GamblingParticipant.Player)
+            {
+                // プレイヤーのカードは常に表向き
+                cardObject.GetComponent<CardView>().Flip();
+            }
+            else // ディーラーの場合
+            {
+                // destinationParent.childCount は SetParent 後なので、
+                // 今回追加されたカードが手札の「何枚目」かを示す。
+                // ディーラーの2枚目以外は表向きにする
+                if (logicalCardCount != 1) // 0-indexed count after current card becomes 2nd card
+                {
+                    cardObject.GetComponent<CardView>().Flip();
+                }
+                // else: ディーラーの2枚目はFlipせずに裏向きのままにする
+            }
+        }
+
+        /// <summary>
+        /// 表示されているすべてのカードをシーンから削除する。
+        /// </summary>
+        public void ClearDisplayedCards()
+        {
+            foreach (GameObject cardObject in _instantiatedCards)
+            {
+                if (cardObject != null) // Check if the object still exists before destroying
+                {
+                    Destroy(cardObject);
+                }
+            }
+            _instantiatedCards.Clear(); // Clear the list after destroying all cards
+        }
+
+        /// <summary>
+        /// ディーラーの裏向きのカードを表にする。
+        /// </summary>
+        public void RevealDealerHiddenCard()
+        {
+            // ディーラーの手札コンテナ内のカードを検索
+            foreach (Transform child in _placementController.DealerHandContainer)
+            {
+                CardView cardView = child.GetComponent<CardView>();
+                if (cardView != null && !cardView.IsFaceUp)
+                {
+                    cardView.Flip();
+                    Debug.Log("ディーラーの裏向きのカードを表にしました。");
+                    return; // 1枚見つけたら終了
+                }
+            }
+            Debug.LogWarning("ディーラーの裏向きのカードが見つかりませんでした。");
         }
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Develop.Gambling.States
 {
@@ -25,9 +25,6 @@ namespace Develop.Gambling.States
 
             // ロジックに基づいてディーラーの手札を確定させるため
             Dealer.Logic.DealerTurn();
-
-            // 最終的な手札状況を記録（表示）するため
-            Dealer.LogHandStatus();
 
             // 全てのカードが揃ったため、勝敗判定フェーズへ移行するため
             StateMachine.ChangeState(new ResultState(Dealer, StateMachine));

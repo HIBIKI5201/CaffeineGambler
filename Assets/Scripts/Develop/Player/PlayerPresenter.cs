@@ -3,31 +3,34 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerPresenter : MonoBehaviour, IPointerClickHandler
+namespace Develop.Player
 {
-    private CompositeDisposable _disposables;
-    private PlayerData _playerData;
-    private PlayerViewer _playerViewer;
-
-    public void Init(PlayerData playerData, PlayerViewer playerViwer)
+    public class PlayerPresenter : MonoBehaviour, IPointerClickHandler
     {
-        _disposables = new CompositeDisposable();
-        _playerData = playerData;
-        _playerViewer = playerViwer;
+        private CompositeDisposable _disposables;
+        private PlayerData _playerData;
+        private PlayerViewer _playerViewer;
 
-        _playerData.Money
-            .Subscribe(money => _playerViewer.SetCount(money))
-            .AddTo(_disposables);
-    }
+        public void Init(PlayerData playerData, PlayerViewer playerViwer)
+        {
+            _disposables = new CompositeDisposable();
+            _playerData = playerData;
+            _playerViewer = playerViwer;
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        _playerData?.AddMoney(1);
-    }
+            _playerData.Money
+                .Subscribe(money => _playerViewer.SetCount(money))
+                .AddTo(_disposables);
+        }
 
-    private void OnDestroy()
-    {
-        _disposables?.Dispose();
-        _playerData?.OnDestroy();
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            _playerData?.AddMoney(1);
+        }
+
+        private void OnDestroy()
+        {
+            _disposables?.Dispose();
+            _playerData?.OnDestroy();
+        }
     }
 }

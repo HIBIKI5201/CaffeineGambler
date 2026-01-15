@@ -1,12 +1,15 @@
 using TMPro;
 using UnityEngine;
 
-public class PlayerViewer : MonoBehaviour
+namespace Develop.Player
 {
-    [SerializeField] private TextMeshProUGUI _moneyText;
-
-    public void SetCount(int count)
+    public class PlayerViewer : MonoBehaviour
     {
-        _moneyText.text = count.ToString();
+        [SerializeField] private TextMeshProUGUI _moneyText;
+
+        public void SetCount(int count)
+        {
+            _moneyText.text = count.ToString();
+        }
     }
 }

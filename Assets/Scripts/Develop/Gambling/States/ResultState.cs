@@ -34,6 +34,9 @@ namespace Develop.Gambling.States
             
             // 今回の賭け金額をリセットするため
             Dealer.ResetBet();
+            
+            // 表示されているすべてのカードをクリア
+            Dealer.ClearAllCardsDisplayed(); // New line
 
             // 再びゲームを開始できる待機状態へ戻すため
             StateMachine.ChangeState(new IdleState(Dealer, StateMachine));
