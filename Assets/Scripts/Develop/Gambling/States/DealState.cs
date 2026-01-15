@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Develop.Gambling.States
 {
@@ -28,9 +28,6 @@ namespace Develop.Gambling.States
 
             // ルールに基づいた初期カードを配るため
             Dealer.Logic.DealInitialCards();
-
-            // 配布後の状況を確認するため
-            Dealer.LogHandStatus();
 
             // 配布完了後、即座にプレイヤーの選択フェーズへ移るため
             ToPlayerTurn();

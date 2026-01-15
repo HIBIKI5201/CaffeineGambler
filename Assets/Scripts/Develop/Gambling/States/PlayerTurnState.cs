@@ -32,9 +32,6 @@ namespace Develop.Gambling.States
             // ロジックを通じてカードを引き、バーストしたか結果を受け取るため
             bool isBurst = Dealer.Logic.Hit();
 
-            // 現在の手札をログに出力してプレイヤーが状況を把握できるようにするため
-            Dealer.LogHandStatus();
-
             if (isBurst)
             {
                 // バーストした場合は即座にゲーム終了（結果表示）へ移行するため
