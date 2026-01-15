@@ -98,4 +98,6 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 Assets/TextMesh Pro/
-Assets/AssetStoreTools/
+Assets/AssetStoreTools/2D Cards Game Art Pack/
+Assets/AssetStoreTools/Plugins/
+Assets/AssetStoreTools/Plugins.meta
