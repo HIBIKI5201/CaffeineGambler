@@ -1474,9 +1474,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1483243630}
   - component: {fileID: 1483243629}
-  - component: {fileID: 1483243628}
   - component: {fileID: 1483243627}
   - component: {fileID: 1483243626}
+  - component: {fileID: 1483243631}
+  - component: {fileID: 1483243632}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1517,22 +1518,6 @@ MonoBehaviour:
   _cardSpriteRepository: {fileID: 11400000, guid: 3a406bc87f62cba4698b1dce151494c1, type: 2}
   _cardHorizontalOffset: 100
   _cardDepthOffset: -0.01
---- !u!114 &1483243628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1483243625}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d34d7c3ff7db0454ba94b35f2de3fcb9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Develop.Gambling.Develop.GamblingInitialize
-  _blackJackSettings: {fileID: 11400000, guid: 8a00770689f4eee4294fc4cd4ceabff6, type: 2}
-  _economySettings: {fileID: 11400000, guid: 73a1770e433757e46bfc378e5aa80e25, type: 2}
-  _uiPresenter: {fileID: 1483243629}
-  _dealerPresenter: {fileID: 1483243627}
 --- !u!114 &1483243629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1567,6 +1552,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1483243631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483243625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6dd4debb5e9c764c98e238c92084335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.GameManager
+  _gamblingInitializer: {fileID: 1483243632}
+--- !u!114 &1483243632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483243625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ba05183a8259c4cb6bc2b7a69ffeb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Gambling.GamblingInitilizer
+  _blackJackSettings: {fileID: 11400000, guid: 8a00770689f4eee4294fc4cd4ceabff6, type: 2}
+  _economySettings: {fileID: 11400000, guid: 73a1770e433757e46bfc378e5aa80e25, type: 2}
+  _uiPresenter: {fileID: 1483243629}
+  _dealerPresenter: {fileID: 1483243627}
 --- !u!1 &1502541036
 GameObject:
   m_ObjectHideFlags: 0
