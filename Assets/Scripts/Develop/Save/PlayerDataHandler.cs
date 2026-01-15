@@ -9,7 +9,7 @@ namespace Develop.Save
     /// </summary>
     public class PlayerDataHandler
     {
-        public void LoadandApply(PlayerData target)
+        public void LoadAndApply(PlayerData target)
         {
             // Key‚Í PlayerData ‚ÌŒ^–¼AÀ‘Ì‚Í PlayerDataSave
             var loadedSave = SaveData.LoadJson(
