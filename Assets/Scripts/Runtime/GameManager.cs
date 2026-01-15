@@ -13,12 +13,14 @@ namespace Runtime
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private GamblingInitilizer _gamblingInitializer;
+        [SerializeField] private PlayerInitilizer _playerInitializer;
         private PlayerData _playerData;
         private void Awake()
         {
             _playerData = new PlayerData(1000); // 初期所持金1000でプレイヤーデータを作成
             // ギャンブルシステムの初期化を実行
             _gamblingInitializer.GamblingInit(_playerData);
+            _playerInitializer.Init(_playerData);
         }
     }
 }
