@@ -750,6 +750,95 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &699634522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 699634523}
+  - component: {fileID: 699634525}
+  - component: {fileID: 699634524}
+  - component: {fileID: 699634526}
+  m_Layer: 5
+  m_Name: Panel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &699634523
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699634522}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1827585692}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 482, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &699634524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699634522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 9d3976bd76a9e3c44969cbc90af6c33f, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &699634525
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699634522}
+  m_CullTransparentMesh: 1
+--- !u!114 &699634526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699634522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16395fc478077e545b546755608258e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Player.PlayerPresenter
+  _playerViewer: {fileID: 1502541040}
 --- !u!1 &776684938
 GameObject:
   m_ObjectHideFlags: 0
@@ -1478,6 +1567,7 @@ GameObject:
   - component: {fileID: 1483243626}
   - component: {fileID: 1483243631}
   - component: {fileID: 1483243632}
+  - component: {fileID: 1483243634}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1565,6 +1655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Runtime.GameManager
   _gamblingInitializer: {fileID: 1483243632}
+  _playerInitializer: {fileID: 1483243634}
 --- !u!114 &1483243632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1581,6 +1672,19 @@ MonoBehaviour:
   _economySettings: {fileID: 11400000, guid: 73a1770e433757e46bfc378e5aa80e25, type: 2}
   _uiPresenter: {fileID: 1483243629}
   _dealerPresenter: {fileID: 1483243627}
+--- !u!114 &1483243634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1483243625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c63425d6a1c6ef4d8ba65ccd8e89504, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInitilizer
+  _playerPresenter: {fileID: 699634526}
 --- !u!1 &1502541036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1592,6 +1696,7 @@ GameObject:
   - component: {fileID: 1502541037}
   - component: {fileID: 1502541038}
   - component: {fileID: 1502541039}
+  - component: {fileID: 1502541040}
   m_Layer: 5
   m_Name: Money
   m_TagString: Untagged
@@ -1718,6 +1823,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1502541040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1502541036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c930b2452ade1a4981532f26feb3531, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Player.PlayerViewer
+  _moneyText: {fileID: 1502541039}
 --- !u!1 &1559946253
 GameObject:
   m_ObjectHideFlags: 0
@@ -2018,6 +2136,7 @@ RectTransform:
   - {fileID: 921268281}
   - {fileID: 458937213}
   - {fileID: 1957847212}
+  - {fileID: 699634523}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
