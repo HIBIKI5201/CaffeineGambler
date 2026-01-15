@@ -1,5 +1,6 @@
 using Develop.Player;
 using Runtime.Gambling;
+using Runtime.Save;
 using UnityEngine;
 namespace Runtime
 {
@@ -11,13 +12,22 @@ namespace Runtime
     {
         [SerializeField] private GamblingInitilizer _gamblingInitializer;
         [SerializeField] private PlayerInitilizer _playerInitializer;
+        [SerializeField] private int _initialMoney = 1000;
         private PlayerData _playerData;
+        private SaveInitializer _saveInitializer;
         private void Awake()
         {
-            _playerData = new PlayerData(1000); // 初期所持金1000でプレイヤーデータを作成
+            _playerData = new PlayerData(_initialMoney); // 初期所持金1000でプレイヤーデータを作成
             // ギャンブルシステムの初期化を実行
+            _saveInitializer = new SaveInitializer();
+            _saveInitializer.Init(_playerData);
             _gamblingInitializer.GamblingInit(_playerData);
             _playerInitializer.Init(_playerData);
+            
+        }
+        private void OnApplicationQuit()
+        {
+           _saveInitializer.Save(_playerData);
         }
     }
 }
