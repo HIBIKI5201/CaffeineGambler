@@ -1,16 +1,22 @@
+using Develop.Player;
+using Develop.Upgrade;
 using UnityEngine;
 
 public class TestManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private ShopManager _shopManager;
+
+    private PlayerData _playerData;
+
+    private void Start()
     {
-        
+        _playerData = new PlayerData(1000);
+        var upgrades = UpgradeFactory.Create(_playerData);
+        _shopManager.Init(_playerData,upgrades.ToArray());
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        _playerData.AddMoney(1); // 毎フレームお金増える
     }
 }
