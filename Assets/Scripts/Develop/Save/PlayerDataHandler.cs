@@ -9,9 +9,7 @@ namespace Develop.Save
     /// </summary>
     public class PlayerDataHandler
     {
-        public PlayerData PlayerData { get; private set; }
-
-        public void Load()
+        public void LoadandApply(PlayerData target)
         {
             // Key‚Í PlayerData ‚ÌŒ^–¼AŽÀ‘Ì‚Í PlayerDataSave
             var loadedSave = SaveData.LoadJson(
@@ -19,24 +17,21 @@ namespace Develop.Save
                 defaultValue: new PlayerDataSave { Money = 1000 }
             );
 
-            // DTO -> PlayerData
-            PlayerData = new PlayerData(loadedSave.Money);
+            if (loadedSave == null)
+                return;
+
+            target.Money.Value = loadedSave.Money;
         }
-        public void Save()
+        public void Save(PlayerData playerData)
         {
             // PlayerData -> DTO
             var save = new PlayerDataSave
             {
-                Money = PlayerData.Money.Value
+                Money = playerData.Money.Value
             };
 
             // Key‚ÍPlayerData‚ÌŒ^–¼
             SaveData.SaveJson(typeof(PlayerData), save);
-        }
-
-        public void OnDestroy()
-        {
-            PlayerData?.OnDestroy();
         }
     }
 }
