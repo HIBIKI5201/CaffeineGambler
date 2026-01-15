@@ -1,5 +1,5 @@
+﻿using System.Threading.Tasks;
 using UnityEngine;
-
 namespace Develop.Gambling.States
 {
     /// <summary>
@@ -32,9 +32,6 @@ namespace Develop.Gambling.States
             // ロジックを通じてカードを引き、バーストしたか結果を受け取るため
             bool isBurst = Dealer.Logic.Hit();
 
-            // 現在の手札をログに出力してプレイヤーが状況を把握できるようにするため
-            Dealer.LogHandStatus();
-
             if (isBurst)
             {
                 // バーストした場合は即座にゲーム終了（結果表示）へ移行するため
@@ -51,17 +48,15 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     スタンド（勝負する）時の処理。
         /// </summary>
-        public override void OnStand()
-        {
-            // ディーラーの裏向きのカードを表にし、少し待ってから次のステートへ移行するため
-            Dealer.StartDealerCoroutine(StandSequence());
-        }
-
-        private System.Collections.IEnumerator StandSequence()
+        public override async Task OnStand()
         {
             Dealer.RevealDealerHiddenCard();
-            yield return new WaitForSeconds(1f); // 1秒待機
+            // ディーラーの裏向きのカードを表にし、少し待ってから次のステートへ移行するため
+            await Task.Delay(1000);
+
             StateMachine.ChangeState(new DealerTurnState(Dealer, StateMachine));
         }
+
+
     }
 }

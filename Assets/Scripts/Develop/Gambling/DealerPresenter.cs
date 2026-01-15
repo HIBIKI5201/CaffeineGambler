@@ -132,11 +132,11 @@ namespace Develop.Gambling
             int logicalCardCount = 0;
             if (target == GamblingParticipant.Player)
             {
-                logicalCardCount = _dealer.Logic.PlayerHand.Count;
+                logicalCardCount = _dealer.Logic.PlayerHand.Cards.Count;
             }
             else if (target == GamblingParticipant.Dealer)
             {
-                logicalCardCount = _dealer.Logic.DealerHand.Count;
+                logicalCardCount = _dealer.Logic.DealerHand.Cards.Count;
             }
             
             Vector3 targetLocalPosition = new Vector3(

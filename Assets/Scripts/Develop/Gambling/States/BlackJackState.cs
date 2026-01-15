@@ -1,3 +1,5 @@
+﻿using System.Threading.Tasks;
+
 namespace Develop.Gambling.States
 {
     /// <summary>
@@ -42,7 +44,10 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     スタンド時の振る舞い。
         /// </summary>
-        public virtual void OnStand() { }
+        public virtual Task OnStand()
+        {
+            return Task.CompletedTask;
+        }
 
         protected BlackJackDealer Dealer;
         protected BlackJackStateMachine StateMachine;
