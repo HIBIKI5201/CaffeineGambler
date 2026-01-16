@@ -2,6 +2,7 @@
 using Develop.Gambling.States;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Develop.Gambling
 {
@@ -32,6 +33,17 @@ namespace Develop.Gambling
             _stateMachine.Initialize(new IdleState(this, _stateMachine));
         }
 
+        public Task WaitForInput()
+        {
+            _waitForResultInput = new TaskCompletionSource<bool>();
+            return _waitForResultInput.Task;
+        }
+        public void NotifyResultInput()
+        {
+            // 入力待ち中であれば、待機しているTaskを完了させるため
+            _waitForResultInput?.TrySetResult(true);
+        }
+        
         /// <summary>
         /// ディーラーの伏せカードを公開する。
         /// </summary>
@@ -87,6 +99,7 @@ namespace Develop.Gambling
             CurrentBetAmount = 0;
         }
 
+        private TaskCompletionSource<bool> _waitForResultInput;
         private BlackJackDealer _dealer;
         private BlackJackLogic _logic;
         private GamblingEconomy _economy;

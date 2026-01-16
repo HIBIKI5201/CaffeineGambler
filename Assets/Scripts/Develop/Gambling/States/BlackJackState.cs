@@ -23,7 +23,7 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     状態に入った際の処理。
         /// </summary>
-        public virtual void Enter() { }
+        public virtual async Task Enter() { }
 
         /// <summary>
         ///     状態を抜ける際の処理。

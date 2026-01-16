@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Develop.Gambling.States
@@ -18,8 +19,9 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     状態開始時の処理。
         /// </summary>
-        public override void Enter()
+        public override async Task Enter()
         {
+            Dealer.ClearAllCardsDisplayed();
             // 現在の状態をデバッグログで把握できるようにするため
             Debug.Log("[State] Idle: ベット待ち");
         }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Develop.Gambling.States
 {
@@ -18,7 +19,7 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     状態開始時の処理。
         /// </summary>
-        public override void Enter()
+        public override async Task Enter()
         {
             // 処理の開始をログで明示するため
             Debug.Log("[State] Deal: カード配布中...");

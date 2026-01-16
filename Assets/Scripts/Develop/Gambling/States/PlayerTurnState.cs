@@ -18,7 +18,7 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     状態開始時の処理。
         /// </summary>
-        public override void Enter()
+        public override async Task Enter()
         {
             // プレイヤーに入力を促すメッセージを表示するため
             Debug.Log("[State] PlayerTurn: 行動を選択してください (Hit / Stand)");

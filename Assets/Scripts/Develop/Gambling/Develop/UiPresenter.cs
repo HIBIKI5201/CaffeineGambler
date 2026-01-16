@@ -130,6 +130,7 @@ namespace Develop.Gambling.Develop
             // 0より大きい金額が賭けられている場合のみゲームを開始するため
             if (_currentBetSelection > 0)
             {
+                _dealer.NotifyResultInput();
                 _dealer?.StartGame(_currentBetSelection);
             }
         }

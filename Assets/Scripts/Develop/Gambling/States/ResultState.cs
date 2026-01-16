@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Develop.Gambling.States
@@ -18,7 +19,7 @@ namespace Develop.Gambling.States
         /// <summary>
         ///     状態開始時の処理。
         /// </summary>
-        public override void Enter()
+        public override async Task Enter()
         {
             // 結果発表の開始をログで通知するため
             Debug.Log("[State] Result: 結果発表");
@@ -34,10 +35,9 @@ namespace Develop.Gambling.States
             
             // 今回の賭け金額をリセットするため
             Dealer.ResetBet();
-            
-            // 表示されているすべてのカードをクリア
-            Dealer.ClearAllCardsDisplayed(); // New line
 
+            //ここにプレイヤーの入力を待機する処理を追加したい。
+            await Dealer.WaitForInput();
             // 再びゲームを開始できる待機状態へ戻すため
             StateMachine.ChangeState(new IdleState(Dealer, StateMachine));
         }
