@@ -1,38 +1,33 @@
 using Develop.Player;
+using System;
 using UnityEngine;
 
 namespace Develop.Save
 {
     /// <summary>
-    /// ƒvƒŒƒCƒ„[ƒf[ƒ^‘€ì—p‚ÌƒNƒ‰ƒXB
+    /// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ‡ãƒ¼ã‚¿æ“ä½œç”¨ã®ã‚¯ãƒ©ã‚¹ã€‚
     /// </summary>
     public class PlayerDataHandler
     {
-        public PlayerData PlayerData { get; private set; }
-
-        public void Load()
+        public void LoadAndApply(PlayerData player)
         {
-            int savedMoney = SaveData.LoadInt(PlayerData.MoneyKey, 1000);
-            PlayerData = new PlayerData(savedMoney);
-            Debug.Log($"Money loaded: {savedMoney}");
+            // Keyã¯ PlayerData ã®å‹åã€å®Ÿä½“ã¯ PlayerDataSave
+            var loadedSave = SaveData.LoadJson(
+                keyType: typeof(PlayerData),
+                defaultValue: default(PlayerDataSave)
+            );
+
+            if (loadedSave == null)
+                return;
+
+            loadedSave.Convert(player);
         }
-
-        public void Save()
+        public void Save(PlayerData playerData)
         {
-            if (PlayerData != null)
-            {
-                SaveData.SaveInt(PlayerData.MoneyKey, PlayerData.Money.Value);
-                Debug.Log($"Money saved: {PlayerData.Money.Value}");
-            }
-            else
-            {
-                Debug.LogWarning("PlayerData is null. Cannot save.");
-            }
-        }
+            var save = new PlayerDataSave(playerData);
 
-        public void OnDestroy()
-        {
-            PlayerData?.OnDestroy();
+            // Keyã¯PlayerDataã®å‹å
+            SaveData.SaveJson(typeof(PlayerData), save);
         }
     }
 }

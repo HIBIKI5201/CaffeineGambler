@@ -99,3 +99,6 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 Assets/TextMesh Pro/
 Assets/AssetStoreTools/2D Cards Game Art Pack/
+Assets/AssetStoreTools/Plugins/
+Assets/AssetStoreTools/Plugins.meta
+Assets/Plugins/

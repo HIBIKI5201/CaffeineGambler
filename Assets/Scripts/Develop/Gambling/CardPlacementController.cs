@@ -9,15 +9,15 @@ namespace Develop.Gambling
     public class CardPlacementController : MonoBehaviour
     {
         [Tooltip("ディーラーがカードを生成する（持つ）位置")]
-        [SerializeField] private Transform _dealerCardOrigin;
-        public Transform DealerCardOrigin => _dealerCardOrigin;
+        [SerializeField] private RectTransform _dealerCardOrigin;
+        public RectTransform DealerCardOrigin => _dealerCardOrigin;
 
-        [Tooltip("プレイヤーの手札を整列させる親Transform")]
-        [SerializeField] private Transform _playerHandContainer;
-        public Transform PlayerHandContainer => _playerHandContainer;
+        [Tooltip("プレイヤーの手札を整列させる親RectTransform")]
+        [SerializeField] private RectTransform _playerHandContainer;
+        public RectTransform PlayerHandContainer => _playerHandContainer;
         
-        [Tooltip("ディーラーの手札を整列させる親Transform")]
-        [SerializeField] private Transform _dealerHandContainer;
-        public Transform DealerHandContainer => _dealerHandContainer;
+        [Tooltip("ディーラーの手札を整列させる親RectTransform")]
+        [SerializeField] private RectTransform _dealerHandContainer;
+        public RectTransform DealerHandContainer => _dealerHandContainer;
     }
 }

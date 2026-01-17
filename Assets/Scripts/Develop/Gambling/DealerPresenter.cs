@@ -95,8 +95,14 @@ namespace Develop.Gambling
                 Debug.LogError("カードのプレハブが設定されていません。", this);
                 return;
             }
-            GameObject cardObject = Instantiate(_cardPrefab, _placementController.DealerCardOrigin.position, _placementController.DealerCardOrigin.rotation);
+            // UI表示のために親を指定して生成
+            GameObject cardObject = Instantiate(_cardPrefab, _placementController.DealerCardOrigin);
             _instantiatedCards.Add(cardObject); // Add card to tracking list
+
+            // 位置・回転・スケールをリセット
+            cardObject.transform.localPosition = Vector3.zero;
+            cardObject.transform.localRotation = Quaternion.identity;
+            cardObject.transform.localScale = Vector3.one;
 
             // 3. CardViewにスプライトと値を設定
             CardView cardView = cardObject.GetComponent<CardView>();
@@ -123,7 +129,7 @@ namespace Develop.Gambling
             // _dealerAnimator.SetTrigger("Deal");
 
             // 移動先の決定
-            Transform destinationParent = target == GamblingParticipant.Player 
+            RectTransform destinationParent = target == GamblingParticipant.Player 
                 ? _placementController.PlayerHandContainer 
                 : _placementController.DealerHandContainer;
             
@@ -132,17 +138,17 @@ namespace Develop.Gambling
             int logicalCardCount = 0;
             if (target == GamblingParticipant.Player)
             {
-                logicalCardCount = _dealer.Logic.PlayerHand.Count;
+                logicalCardCount = _dealer.Logic.PlayerHand.Cards.Count;
             }
             else if (target == GamblingParticipant.Dealer)
             {
-                logicalCardCount = _dealer.Logic.DealerHand.Count;
+                logicalCardCount = _dealer.Logic.DealerHand.Cards.Count;
             }
             
             Vector3 targetLocalPosition = new Vector3(
-                logicalCardCount * _cardHorizontalOffset,
+                (logicalCardCount - 1) * _cardHorizontalOffset,
                 0,
-                logicalCardCount * _cardDepthOffset
+                (logicalCardCount - 1) * _cardDepthOffset
             );
 
             // カードを指定時間かけて目的地まで移動
@@ -176,8 +182,6 @@ namespace Develop.Gambling
             // Debug: ログを出力
            
             
-            // スプライトの描画順を設定 (後から置かれたカードほど手前に来るように)
-            cardObject.GetComponent<CardView>().SetSortingOrder(logicalCardCount);
             
             // カードを配り終えたアニメーションをトリガー（将来的な拡張箇所）
             // _dealerAnimator.SetTrigger("Idle");
