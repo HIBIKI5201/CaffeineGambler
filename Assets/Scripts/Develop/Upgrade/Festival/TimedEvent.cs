@@ -13,7 +13,6 @@ namespace Develop.Upgrade.Festival
             ScheduleNextStart();
         }
         public bool IsActive { get; private set; }
-        public int EventCounter { get; private set; }
 
         public void Update()
         {
@@ -26,19 +25,6 @@ namespace Develop.Upgrade.Festival
             {
                 EventEnd();
             }
-        }
-        /// <summary>
-        ///     採取処理を行う。
-        ///     イベントがアクティブな場合のみカウンターを増加させる。
-        /// </summary>
-        public void Harvest()
-        {
-            if (!IsActive)
-            {
-                return;
-            }
-
-            EventCounter++;
         }
 
 
