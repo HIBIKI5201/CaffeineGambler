@@ -7,8 +7,10 @@ namespace Develop.Upgrade
     /// </summary>
     public class LuckyCollectUpgrade : UpgradeBase, IModifier
     {
+        /// <summary> 発生確率 </summary>
         public int ChancePercent => (int)_chancePercent;
 
+        /// <summary> 倍率 </summary>
         public float Multiplier => _multiplier;
 
         public override string Name => "ラッキー採取";
