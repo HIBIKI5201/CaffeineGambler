@@ -22,6 +22,14 @@ namespace Domain
             int multiplier)
         {
             _timedEvent = timedEvent;
+           Init(threshold, multiplier);
+        }
+
+        /// <summary>
+        ///     最低クリック数と倍率を設定する。
+        /// </summary>
+        public void Init(int threshold, int multiplier)
+        {
             _threshold = threshold;
             _multiplier = multiplier;
         }
@@ -80,8 +88,8 @@ namespace Domain
         }
 
         private readonly TimedEvent _timedEvent;
-        private readonly int _threshold; // m
-        private readonly int _multiplier; // n 
+        private int _threshold; // m
+        private int _multiplier; // n 
 
         private int _counter;
         private int _eventCoffeeBeans;
