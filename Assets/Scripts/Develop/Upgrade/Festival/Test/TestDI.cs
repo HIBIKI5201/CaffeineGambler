@@ -9,35 +9,29 @@ namespace Develop.Upgrade.Festival
         {
             Event();
         }
+        [Test]
         public void Event()
         {
             var clock = new FakeClock();
             var random = new FakeRandom(30);
             var timeEvent = new TimedEvent(clock,random,s);
 
+            timeEvent.Harvest();
+            Assert.AreEqual(0, timeEvent.EventCounter);
+        }
 
-            //30秒たったらイベントが起動する
-            clock.Advance(29);　
-            timeEvent.Update();
-            Assert.IsFalse(timeEvent.IsActive);
+        public void EventActive()
+        {
+            var clock = new FakeClock();
+            var random = new FakeRandom(30);
+            var timeEvent = new TimedEvent(clock, random, s);
 
-            //ここでイベントがtrue確認
-            clock.Advance(1);
-            timeEvent.Update();
-            Assert.IsTrue(timeEvent.IsActive);
-
-            //新しくタイマーがセットされるかの確認
-            //フィーバータイムは10秒なので
-            //falseならOK
-            clock.Advance(10);
-            timeEvent.Update();
-            Assert.IsFalse(timeEvent.IsActive);
-
-            //イベントが起動したか
-            clock.Advance(30);
+            clock.Advance(39);
             timeEvent.Update();
             Assert.IsTrue(timeEvent.IsActive);
 
+            timeEvent.Harvest();
+            Assert.AreEqual(1, timeEvent.EventCounter);
         }
 
     }
