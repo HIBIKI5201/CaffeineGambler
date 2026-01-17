@@ -10,12 +10,6 @@ namespace Domain
     /// </summary>
     public class EventReward
     {
-        private readonly TimedEvent _timedEvent;
-        private readonly int _threshold;
-        private readonly int _multiplier;
-
-        private int _counter;
-        private int _eventCoffeeBeans;
 
         public int TotalCoffeeBeans { get; private set; }
 
@@ -82,11 +76,14 @@ namespace Domain
                     TotalCoffeeBeans +=
                         _eventCoffeeBeans * (_multiplier - 1);
                 }
-
-                // 次回のイベントのために集計をリセット
-                _counter = 0;
-                _eventCoffeeBeans = 0;
             }
         }
+
+        private readonly TimedEvent _timedEvent;
+        private readonly int _threshold; // m
+        private readonly int _multiplier; // n 
+
+        private int _counter;
+        private int _eventCoffeeBeans;
     }
 }
