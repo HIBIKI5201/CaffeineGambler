@@ -27,6 +27,20 @@ namespace Develop.Upgrade.Festival
                 EventEnd();
             }
         }
+        /// <summary>
+        ///     採取処理を行う。
+        ///     イベントがアクティブな場合のみカウンターを増加させる。
+        /// </summary>
+        public void Harvest()
+        {
+            if (!IsActive)
+            {
+                return;
+            }
+
+            EventCounter++;
+        }
+
 
         private void EventStart()
         {
@@ -43,6 +57,7 @@ namespace Develop.Upgrade.Festival
         {
             _nextStartTime = _clock.Now + _random.Range(30, 90);
         }
+
 
         private IClock _clock;
         private IRandom _random;
