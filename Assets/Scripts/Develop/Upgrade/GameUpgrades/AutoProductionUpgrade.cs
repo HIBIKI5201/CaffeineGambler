@@ -1,30 +1,21 @@
-using UnityEngine;
-
 namespace Develop.Upgrade
 {
     /// <summary>
     ///     自動生産機能の強化クラス。
     /// </summary>
-    public class AutoProductionUpgrade : IUpgrade
+    public class AutoProductionUpgrade : UpgradeBase
     {
-        public string Name => "自動生産";
+        public override string Name => "自動生産";
 
-        public int Level => _level;
+        public override int MaxLevel => 50;
 
-        public int MaxLevel => 50;
         public int ProductionPerSecond => CalculateProductionPerSecond(_level);
 
         private const int _theresholdLevel = 5;
         private const int _linerAdd = 2;
         private int _level;
 
-        public void ApplyUpgrade()
-        {
-            if (_level >= MaxLevel) return;
-            _level++;
-        }
-
-        public int GetCost()
+        public override int GetCost()
         {
             // TODO: コスト計算式を決める。
             return 20 + _level * 15;
