@@ -5,14 +5,15 @@ namespace Develop.Upgrade.Festival
      public class TimedEvent
     {
 
-        public TimedEvent(FakeClock clock, FakeRandom random,int eventTime)
+        public TimedEvent(IClock clock, IRandom random,int eventTime)
         {
             this._clock = clock;
             this._random = random;
             this._eventTime = eventTime;
-            _nextStartTime = _clock.Now + _random.Range(30, 90);
+            ScheduleNextStart();
         }
         public bool IsActive { get; private set; }
+        public int EventCounter { get; private set; }
 
         public void Update()
         {
@@ -43,8 +44,8 @@ namespace Develop.Upgrade.Festival
             _nextStartTime = _clock.Now + _random.Range(30, 90);
         }
 
-        private FakeClock _clock;
-        private FakeRandom _random;
+        private IClock _clock;
+        private IRandom _random;
         private int _nextStartTime;
         private int _eventTime;
         private int _endTime;
