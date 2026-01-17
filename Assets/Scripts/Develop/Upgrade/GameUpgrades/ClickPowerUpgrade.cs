@@ -4,12 +4,12 @@ using UnityEngine;
 namespace Develop.Upgrade
 {
     /// <summary>
-    /// クリックパワーアップグレードのクラス。
+    ///     クリックパワーアップグレードのクラス。
     /// </summary>
     public class ClickPowerUpgrade : UpgradeBase, IModifier
     {
         /// <summary>
-        ///     現在の倍率を返す。
+        /// 現在の倍率を返す。
         /// </summary>
         public float Multiplier => _multiplier;
 
@@ -37,10 +37,10 @@ namespace Develop.Upgrade
         }
 
         /// <summary>
-        ///     レベルに応じた倍率を計算する。
+        /// レベルに応じた倍率を計算する。
         /// </summary>
-        /// <param name="level"></param>
-        /// <returns></returns>
+        /// <param name="level">現在のレベル</param>
+        /// <returns>倍率</returns>
         private float CalculateMultiplier(int level)
         {
             // n(level)=(1+0.5×level) × (1−0.05×(level−1))
