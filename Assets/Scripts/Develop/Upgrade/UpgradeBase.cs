@@ -13,7 +13,7 @@ namespace Develop.Upgrade
 
         public bool CanLevelUp => Level < MaxLevel;
 
-        public void ApplyUpgrade()
+        public virtual void ApplyUpgrade()
         {
             if (CanLevelUp)
             {
