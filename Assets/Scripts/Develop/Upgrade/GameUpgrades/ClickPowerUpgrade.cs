@@ -17,7 +17,7 @@ namespace Develop.Upgrade
 
         public override int MaxLevel => 5;
 
-        private float _multiplier;
+        private float _multiplier = 1f;
         private const int _baseCost = 5;
 
         public float Modify(float value)
@@ -27,7 +27,7 @@ namespace Develop.Upgrade
 
         public override int GetCost()
         {
-            return (int)(_baseCost * Mathf.Pow(2, Level - 1));
+            return _baseCost * (1 << Level) ;
         }
 
         public override void ApplyUpgrade()
@@ -43,6 +43,8 @@ namespace Develop.Upgrade
         /// <returns>倍率</returns>
         private float CalculateMultiplier(int level)
         {
+            if (level <= 0) return 1f;
+
             // n(level)=(1+0.5×level) × (1−0.05×(level−1))
             float linear = 0.5f * level;
             float decay = -0.05f * (level - 1);
