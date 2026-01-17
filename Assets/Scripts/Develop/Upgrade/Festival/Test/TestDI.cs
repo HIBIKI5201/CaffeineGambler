@@ -1,37 +1,26 @@
 using NUnit.Framework;
 using UnityEngine;
-namespace Develop.Upgrade.Festival
+namespace Develop.Upgrade.Festival.Test
 {
     public class TestDI : MonoBehaviour
     {
         int s = 10;
-        private void Start()
+      
+
+        public void EventEnd()
         {
-            Event();
-        }
-        [Test]
-        public void Event()
-        {
-            var clock = new FakeClock();
-            var random = new FakeRandom(30);
-            var timeEvent = new TimedEvent(clock,random,s);
+            var threshold = 3;
+            var multiplier = 3;
+            var eventDomain = new TimedEvent(threshold, multiplier);
 
-            timeEvent.Harvest();
-            Assert.AreEqual(0, timeEvent.EventCounter);
-        }
+            eventDomain.StartEvent();
+            eventDomain.OnHarvest();
+            eventDomain.OnHarvest();
 
-        public void EventActive()
-        {
-            var clock = new FakeClock();
-            var random = new FakeRandom(30);
-            var timeEvent = new TimedEvent(clock, random, s);
+            eventDomain.AddCoffeeBeans(10);
+            eventDomain.EndEvent();
 
-            clock.Advance(39);
-            timeEvent.Update();
-            Assert.IsTrue(timeEvent.IsActive);
-
-            timeEvent.Harvest();
-            Assert.AreEqual(1, timeEvent.EventCounter);
+            Assert.AreEqual(30, eventDomain.TotalCoffeeBeans);
         }
 
     }
