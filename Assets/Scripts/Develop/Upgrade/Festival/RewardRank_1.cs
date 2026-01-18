@@ -17,6 +17,6 @@ namespace Develop.Upgrade.Festival
         /// <summary>
         /// 適用される報酬倍率（n）。
         /// </summary>
-        public int Multiplier;
+        public float Multiplier;
     }
 }
