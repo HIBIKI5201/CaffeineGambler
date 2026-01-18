@@ -36,6 +36,11 @@ namespace Develop.Upgrade
             _multiplier = CalculateMultiplier(Level);
         }
 
+        protected override void HandleLevelChanged()
+        {
+            _multiplier = CalculateMultiplier(Level);
+        }
+
         /// <summary>
         /// レベルに応じた倍率を計算する。
         /// </summary>
