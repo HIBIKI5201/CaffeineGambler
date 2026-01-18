@@ -19,10 +19,10 @@ namespace Develop.Upgrade
             // 強化処理を実装したクラスをここで生成するようにしてください。
             List<IUpgrade> upgrades = new List<IUpgrade>
             {
-                new TestUpgrade(),
-                new AutoProductionUpgrade(),
                 new ClickPowerUpgrade(),
-                new LuckyCollectUpgrade()
+                new AutoProductionUpgrade(),
+                new LuckyCollectUpgrade(),
+                new ChargeCollectUpgrade()
             };
             return upgrades;
         }
