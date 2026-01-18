@@ -1,6 +1,9 @@
 using Develop.Player;
+using Develop.Upgrade;
 using Runtime.Gambling;
 using Runtime.Save;
+using Runtime.Upgrade;
+using System.Collections.Generic;
 using UnityEngine;
 namespace Runtime
 {
@@ -13,8 +16,10 @@ namespace Runtime
         [SerializeField] private GamblingInitilizer _gamblingInitializer;
         [SerializeField] private PokerInit _pokerInitializer;
         [SerializeField] private PlayerInitilizer _playerInitializer;
+        [SerializeField] private UpgradeInitializer _upgradeInitializer;
         [SerializeField] private int _initialMoney = 1000;
         private PlayerData _playerData;
+        private List<IUpgrade> _upgrades;
         private SaveInitializer _saveInitializer;
         private void Awake()
         {
@@ -22,10 +27,12 @@ namespace Runtime
             // ギャンブルシステムの初期化を実行
             _saveInitializer = new SaveInitializer();
             _saveInitializer.Init(_playerData);
+
+            _upgrades = UpgradeFactory.Create();
+            _playerInitializer.Init(_playerData, _upgrades);
+            _upgradeInitializer.Init(_playerData, _upgrades);
             _gamblingInitializer.GamblingInit(_playerData);
             _pokerInitializer?.Init(_playerData);
-            _playerInitializer.Init(_playerData);
-            
         }
         private void OnApplicationQuit()
         {
