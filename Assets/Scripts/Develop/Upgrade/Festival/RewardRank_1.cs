@@ -1,7 +1,8 @@
 using UnityEngine;
 namespace Develop.Upgrade.Festival
 {
-    public class RewardRank : MonoBehaviour
+    [System.Serializable]
+    public class RewardRank 
     {
         /// <summary>
         /// 強化レベル。
