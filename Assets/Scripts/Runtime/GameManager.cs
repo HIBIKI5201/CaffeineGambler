@@ -33,7 +33,7 @@ namespace Runtime
             _saveInitializer = new SaveInitializer();
             _saveInitializer.Init(_playerData,_upgrades);
 
-            _festivalInfra.Init(_hervestBus);
+            _festivalInfra.Init(_hervestBus,_playerData);
             _playerInitializer.Init(_playerData, _upgrades,_hervestBus);
             _upgradeInitializer.Init(_playerData, _upgrades);
             _gamblingInitializer.GamblingInit(_playerData);
