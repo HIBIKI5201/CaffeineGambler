@@ -60,6 +60,7 @@ public class FestivalInfra : MonoBehaviour
 
     private void Update()
     {
+        if(_timeEvent == null) return;
         // 時間の監視
         _timeEvent.Update();
 
