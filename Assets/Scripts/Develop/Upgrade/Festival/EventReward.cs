@@ -1,5 +1,8 @@
+using Develop.Player;
 using Develop.Upgrade.Festival;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Domain
@@ -12,9 +15,10 @@ namespace Domain
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public EventReward(TimedEvent timedEvent)
+        public EventReward(TimedEvent timedEvent,PlayerData playerData)
         {
             _timedEvent = timedEvent;
+            _playerData = playerData;
         }
 
         /// <summary>
@@ -78,7 +82,7 @@ namespace Domain
             }
 
             _eventCoffeeBeans += amount;
-            TotalCoffeeBeans += amount;
+            //TotalCoffeeBeans += amount;
         }
 
         /// <summary>
@@ -96,12 +100,15 @@ namespace Domain
 
                 if (applicableRank != null)
                 {
+                    Assert.IsNull(applicableRank);
                     // (Multiplier - 1) 倍を追加で取得する
-                    TotalCoffeeBeans += _eventCoffeeBeans * (applicableRank.Multiplier - 1);
+                    TotalCoffeeBeans += (int)(_eventCoffeeBeans * (applicableRank.Multiplier - 1));
+                    _playerData.AddMoney(TotalCoffeeBeans);
                 }
 
                 _counter = 0;
                 _eventCoffeeBeans = 0;
+                TotalCoffeeBeans = 0;
             }
         }
 
@@ -109,5 +116,6 @@ namespace Domain
         private List<Develop.Upgrade.Festival.RewardRank> _ranks = new List<Develop.Upgrade.Festival.RewardRank>();
         private int _counter;
         private int _eventCoffeeBeans;
+        private PlayerData _playerData;
     }
 }
