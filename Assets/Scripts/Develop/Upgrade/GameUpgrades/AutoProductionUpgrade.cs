@@ -9,16 +9,15 @@ namespace Develop.Upgrade
 
         public override int MaxLevel => 50;
 
-        public int ProductionPerSecond => CalculateProductionPerSecond(_level);
+        public int ProductionPerSecond => CalculateProductionPerSecond(Level);
 
         private const int _theresholdLevel = 5;
         private const int _linerAdd = 2;
-        private int _level;
 
         public override int GetCost()
         {
             // TODO: コスト計算式を決める。
-            return 20 + _level * 15;
+            return 20 + Level * 15;
         }
 
         /// <summary>
