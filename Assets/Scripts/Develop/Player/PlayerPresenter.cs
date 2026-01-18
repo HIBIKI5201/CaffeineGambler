@@ -9,13 +9,11 @@ namespace Develop.Player
 {
     public class PlayerPresenter : MonoBehaviour, IPointerClickHandler
     {
+        [SerializeField] private PlayerViewer _playerViewer;
+        [SerializeField] private float _baseAmount;
         private CompositeDisposable _disposables;
         private PlayerData _playerData;
         private CollectionCalculation _collectionCalculationPresenter;
-        [SerializeField]
-        private PlayerViewer _playerViewer;
-        [SerializeField]
-        private float _baseAmount;
 
         public void Init(PlayerData playerData,List<IUpgrade> upgrades)
         {
