@@ -20,6 +20,7 @@ namespace Develop.Player
 
         public void Init(PlayerData playerData,List<IUpgrade> upgrades,HarvestBus harvestBus)
         {
+            _harvestBus = harvestBus;
             _disposables = new CompositeDisposable();
             _playerData = playerData;
 
