@@ -16,7 +16,7 @@ public class FestivalUpgrade : UpgradeBase
 
     public override int GetCost()
     {
-        throw new System.NotImplementedException();
+        return 300 * (Level + 1);
     }
 
     public override void ApplyUpgrade()
