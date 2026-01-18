@@ -13,14 +13,16 @@ namespace Develop.Upgrade
         /// </summary>
         /// <param name="playerData"></param>
         /// <returns></returns>
-        public static List<IUpgrade> Create(PlayerData playerData)
+        public static List<IUpgrade> Create()
         {
             // ここでアップグレードのインスタンスを生成し、リストに追加する。
             // 強化処理を実装したクラスをここで生成するようにしてください。
             List<IUpgrade> upgrades = new List<IUpgrade>
             {
                 new TestUpgrade(),
-                new AutoProductionUpgrade()
+                new AutoProductionUpgrade(),
+                new ClickPowerUpgrade(),
+                new LuckyCollectUpgrade()
             };
             return upgrades;
         }
