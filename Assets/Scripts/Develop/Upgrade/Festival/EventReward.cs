@@ -1,8 +1,6 @@
 using Develop.Player;
 using Develop.Upgrade.Festival;
-using NUnit.Framework;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Domain
@@ -15,7 +13,7 @@ namespace Domain
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public EventReward(TimedEvent timedEvent,PlayerData playerData)
+        public EventReward(TimedEvent timedEvent, PlayerData playerData)
         {
             _timedEvent = timedEvent;
             _playerData = playerData;
@@ -33,8 +31,8 @@ namespace Domain
         {
             _ranks.Clear();
 
-            // レベル2未満の場合はボーナス機能自体が無効
-            if (currentLevel < 2)
+            // レベル1未満の場合はボーナス機能自体が無効
+            if (currentLevel < 1)
             {
                 return;
             }
@@ -100,7 +98,6 @@ namespace Domain
 
                 if (applicableRank != null)
                 {
-                    Assert.IsNull(applicableRank);
                     // (Multiplier - 1) 倍を追加で取得する
                     TotalCoffeeBeans += (int)(_eventCoffeeBeans * (applicableRank.Multiplier - 1));
                     _playerData.AddMoney(TotalCoffeeBeans);
