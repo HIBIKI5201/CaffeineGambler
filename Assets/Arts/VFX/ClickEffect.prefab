@@ -54,7 +54,10 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: 1398.0054, y: 427.5635, z: 0}
+        m_Name: ClickPosition
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
