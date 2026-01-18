@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2933710736135012237
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8413757272484295505}
+  - component: {fileID: 5868415457488273072}
+  m_Layer: 0
+  m_Name: BattlePresenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8413757272484295505
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933710736135012237}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.89659, y: 0.96017, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5868415457488273072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2933710736135012237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4e2c4efbe0752b4ca067ea80a826944, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Poker.PokerBattlePresenter
+  _gameManager: {fileID: 0}
+  _playerPresenter: {fileID: 0}
+  _enemyPresenter: {fileID: 0}
+  _resultLabel: {fileID: 0}
+  _dealButton: {fileID: 0}
+  _battleButton: {fileID: 0}
+  _payoutTable: {fileID: 11400000, guid: a0931d6d58df24d459d971129a02244a, type: 2}
+  _betInputField: {fileID: 0}
+  _betAmount: 100
+  _drawLabel: Draw
+  _playerWinLabel: Player Wins!
+  _enemyWinLabel: Enemy Wins!
+  _insufficientFundsMessage: Not enough money to place a bet.

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -34,15 +35,15 @@ namespace Develop.Poker
 
         /// <summary>伏せ表示時に使用するプレースホルダー文字列。</summary>
         [SerializeField] private string _hiddenRankLabel = "???";
+        [SerializeField] private bool _limitRedrawToOnce = true; // true の場合、1 ラウンドにつき 1 回だけ引き直し可能。
 
-        /// <summary>選択されているカードインデックス集合。</summary>
         private readonly HashSet<int> _selectedIndices = new();
-
-        /// <summary>UniRx 購読のまとめて破棄用。</summary>
         private readonly CompositeDisposable _disposables = new();
 
-        /// <summary>初期公開状態の退避。</summary>
         private bool _initialRevealState;
+        private bool _redrawConsumed;
+
+        public event Action<CardPresenter> RedrawPerformed;
 
         private void Awake()
         {
@@ -124,7 +125,7 @@ namespace Develop.Poker
         /// </summary>
         public void OnDealButton()
         {
-            _selectedIndices.Clear();
+            ResetRoundState(refreshImmediately: false);
             _gameManager.DealInitialHand(_handOwner);
             RefreshView();
         }
@@ -158,9 +159,18 @@ namespace Develop.Poker
                 return;
             }
 
+            if (_limitRedrawToOnce && _redrawConsumed)
+            {
+                Debug.LogWarning($"[{_handOwner}] Redraw is limited to once per round.");
+                return;
+            }
+
             _gameManager.ReplaceCards(_handOwner, _selectedIndices);
+            _redrawConsumed = true;
             _selectedIndices.Clear();
+
             RefreshView();
+            RedrawPerformed?.Invoke(this);
         }
 
         /// <summary>
@@ -292,6 +302,20 @@ namespace Develop.Poker
 
             var rank = _gameManager.EvaluateHand(_handOwner);
             _rankLabel.SetText(rank.ToString());
+        }
+
+        /// <summary>
+        /// ラウンド開始時の内部状態リセット。賭け直し可能フラグもここで復帰する。
+        /// </summary>
+        public void ResetRoundState(bool refreshImmediately = true)
+        {
+            _redrawConsumed = false;
+            _selectedIndices.Clear();
+
+            if (refreshImmediately)
+            {
+                RefreshView();
+            }
         }
     }
 }
