@@ -8,9 +8,13 @@ namespace Develop.Upgrade.Festival
     {
         public List<RewardRank> list = new List<RewardRank>();
 
-        private void OnEnable()
+        private void Reset()
         {
-            list.Add(new RewardRank());
+            if (list == null) list = new List<RewardRank>();
+            if (list.Count == 0)
+            {
+                list.Add(new RewardRank()); // デフォルトの1件を追加
+            }
         }
     }
 }
