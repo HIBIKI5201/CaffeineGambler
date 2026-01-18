@@ -7,37 +7,41 @@ using UnityEngine.UI;
 namespace Develop.Poker
 {
     /// <summary>
-    /// プレイヤーと敵の手札状態を同期させ、UI ボタン経由で配札・対決を制御するプレゼンター。
+    /// プレイヤー・敵のカードプレゼンターとボタン入力を束ね、賭け金処理〜勝敗演出までを制御する。
+    /// 引き直しは1回のみ許可し、引き直し後は自動でバトルを実行する。
     /// </summary>
     public class PokerBattlePresenter : MonoBehaviour
     {
-        [SerializeField] private PokerGameManager _gameManager;
-        [SerializeField] private CardPresenter _playerPresenter;
-        [SerializeField] private CardPresenter _enemyPresenter;
-        [SerializeField] private TextMeshProUGUI _resultLabel;
-        [SerializeField] private Button _dealButton;
-        [SerializeField] private Button _battleButton;
-        [SerializeField] private PokerRankPayoutTable _payoutTable;
-        [SerializeField] private TMP_InputField _betInputField; // UI から賭け金を入力させるフィールド。
-        [SerializeField][Min(0)] private int _betAmount = 10;   // 現在設定されている賭け金。所持金に応じて丸め込まれる。
-        [SerializeField] private string _drawLabel = "Draw";
-        [SerializeField] private string _playerWinLabel = "Player Wins!";
-        [SerializeField] private string _enemyWinLabel = "Enemy Wins!";
+        [SerializeField] private PokerGameManager _gameManager;                 // 山札生成・役判定を担うマネージャー。
+        [SerializeField] private CardPresenter _playerPresenter;                // プレイヤーのカード描画／選択操作担当。
+        [SerializeField] private CardPresenter _enemyPresenter;                 // 敵カードの描画担当（基本的に選択不可）。
+        [SerializeField] private TextMeshProUGUI _resultLabel;                  // 勝敗や役結果を表示するラベル。
+        [SerializeField] private Button _dealButton;                            // 配札ボタン（ラウンド開始時の初期化）。
+        [SerializeField] private Button _battleButton;                          // 手動で勝負を確定させるボタン。
+        [SerializeField] private PokerRankPayoutTable _payoutTable;             // 役ごとの倍率を定義した ScriptableObject。
+        [SerializeField] private TMP_InputField _betInputField;                 // UI 上で賭け金を入力するフィールド。
+        [SerializeField][Min(0)] private int _betAmount = 10;                   // 現在の賭け金（所持金を超える場合は自動で丸め込む）。
+        [SerializeField] private string _drawLabel = "Draw";                    // 引き分け時の表示テキスト。
+        [SerializeField] private string _playerWinLabel = "Player Wins!";       // プレイヤー勝利時の表示テキスト。
+        [SerializeField] private string _enemyWinLabel = "Enemy Wins!";         // 敵勝利時の表示テキスト。
         [SerializeField] private string _insufficientFundsMessage = "Not enough money to place a bet.";
 
         private readonly CompositeDisposable _disposables = new();
         private PlayerData _playerData;
+        private bool _battleResolvedThisRound;                                  // このラウンドで既に決着済みかどうか（2重決済を防ぐ）。
 
         private void Awake()
         {
-            SetupButtonSubscriptions();
-            SetupBetInputBinding();
+            SetupButtonSubscriptions();                                         // 配札／バトルボタンの購読登録。
+            SetupBetInputBinding();                                             // ベット入力欄の onEndEdit ハンドリング。
         }
 
-        private void OnDestroy() => _disposables.Dispose();
+        private void OnEnable() => SubscribePlayerRedrawEvent();                // プレイヤーの引き直しイベントを購読。
+        private void OnDisable() => UnsubscribePlayerRedrawEvent();             // 無効化時にイベント購読を解除。
+        private void OnDestroy() => _disposables.Dispose();                     // UniRx 購読をまとめて破棄。 
 
         /// <summary>
-        /// PlayerData を受け取り、所持金ストリームを監視（賭け金の上限連動）する。
+        /// 所持金モデルを受け取り、Money ストリームと賭け金入力を同期させる。
         /// </summary>
         public void Initialize(PlayerData playerData)
         {
@@ -51,22 +55,27 @@ namespace Develop.Poker
             SyncBetInputToCurrentBet();
         }
 
-        /// <summary>
-        /// スクリプト外部（UI スライダーなど）から賭け金を直接設定したいときに利用。
-        /// </summary>
+        /// <summary>外部 UI から賭け金を直接変更したい場合のエントリポイント。</summary>
         public void SetBetAmount(int amount) => SetBetAmountInternal(amount, true);
 
-        /// <summary>ディールボタン押下時に呼ばれ、両者へ再配布し UI を初期化する。</summary>
+        /// <summary>ディールボタン押下時の公開 API。</summary>
         public void OnDealBothButton() => DealBothHands();
 
-        /// <summary>対決ボタン押下時に呼ばれ、役比較＋結果表示をまとめて行う。</summary>
+        /// <summary>バトルボタン押下時の公開 API。</summary>
         public void OnBattleButton() => ExecuteBattle();
 
         /// <summary>
-        /// 対決処理の本体。前提チェック → ベット消費 → 勝敗判定 → 配当 → 敵手札公開までを一括で実行。
+        /// 勝負処理の本体。ラウンド決着済みか、手札が揃っているか、賭け金が支払えるかを順番に判定し、
+        /// 条件を満たしたら配当処理と演出更新を実行する。
         /// </summary>
         private void ExecuteBattle()
         {
+            if (_battleResolvedThisRound)
+            {
+                Debug.LogWarning("Battle has already been resolved this round.");
+                return;
+            }
+
             if (!CanBattle())
             {
                 return;
@@ -81,10 +90,12 @@ namespace Develop.Poker
             ApplyBattlePayout(snapshot, betAmount);
             UpdateBattleResult(snapshot);
             _enemyPresenter?.SetRevealState(true);
+
+            _battleResolvedThisRound = true;                                    // このラウンドで再実行されないようロック。
         }
 
         /// <summary>
-        /// ディール／バトルボタンを UniRx で購読し、重複登録を防ぎながら処理を紐づける。
+        /// 配札／バトルボタンを UniRx で購読し、二重登録を防ぎながら処理に紐づける。
         /// </summary>
         private void SetupButtonSubscriptions()
         {
@@ -100,7 +111,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// ベット入力欄に対し onEndEdit をフックし、ユーザー入力 → 内部値更新 → 反映 のループを作る。
+        /// 賭け金入力欄の onEndEdit を購読し、ユーザー入力 → 内部値更新 → フィールド同期の流れを構築する。
         /// </summary>
         private void SetupBetInputBinding()
         {
@@ -117,13 +128,19 @@ namespace Develop.Poker
             SyncBetInputToCurrentBet();
         }
 
-        /// <summary>プレイヤー・敵の手札を配り直し、結果表示や公開状態をリセットする。</summary>
+        /// <summary>
+        /// ラウンドを開始し、両プレゼンターの状態と表示を初期化した上で、GameManager に配札させる。
+        /// </summary>
         private void DealBothHands()
         {
             if (!EnsureGameManager())
             {
                 return;
             }
+
+            _playerPresenter?.ResetRoundState(refreshImmediately: false);
+            _enemyPresenter?.ResetRoundState(refreshImmediately: false);
+            _battleResolvedThisRound = false;                                   // 新しいラウンドなので再びバトル可能に。
 
             _gameManager.DealInitialHands();
 
@@ -135,7 +152,9 @@ namespace Develop.Poker
             _resultLabel?.SetText("-");
         }
 
-        /// <summary>勝負可能か（GameManager 参照があるか、両手札が揃っているか）をチェックする。</summary>
+        /// <summary>
+        /// 両手札が揃っているか、GameManager 参照が有効かをチェックする。
+        /// </summary>
         private bool CanBattle()
         {
             if (!EnsureGameManager())
@@ -156,7 +175,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 現在の賭け金を所持金に合わせて丸めた後、実際に差し引く。0 円ならそのまま続行。
+        /// 所持金を超えないよう賭け金を丸め、実際に所持金から差し引く。0 円ならそのまま続行可能。
         /// </summary>
         private bool TryConsumeBet(out int betAmount)
         {
@@ -184,7 +203,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 勝負直前に両者の手札をソートし、Evaluate をまとめて呼び出して勝敗判定に使う情報を作る。
+        /// バトル前に両手札をソートし、役評価と勝敗結果をまとめて取得する。
         /// </summary>
         private BattleSnapshot ResolveBattleSequence()
         {
@@ -196,7 +215,8 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 勝敗結果と倍率テーブルを元に配当処理を行う。Draw 時はベット額を全額返却。
+        /// 勝敗結果と倍率テーブルから配当額を算出し、PlayerData に反映する。
+        /// 引き分け時は賭け金を全額返却。
         /// </summary>
         private void ApplyBattlePayout(BattleSnapshot snapshot, int betAmount)
         {
@@ -220,7 +240,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 勝敗メッセージと役情報をラベルに表示し、手札ビューも最新状態にする。
+        /// 勝敗テキストを更新し、カードプレゼンターに再描画を要求する。
         /// </summary>
         private void UpdateBattleResult(BattleSnapshot snapshot)
         {
@@ -237,7 +257,7 @@ namespace Develop.Poker
             _enemyPresenter?.RefreshView();
         }
 
-        /// <summary>GameManager がセットされているかを確認し、未設定なら警告を出して早期リターン。</summary>
+        /// <summary>GameManager が未設定の場合は警告を出して処理を中断する。</summary>
         private bool EnsureGameManager()
         {
             if (_gameManager != null)
@@ -250,7 +270,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 入力された文字列から賭け金を算出して反映。無効値は 0 とみなす。
+        /// 入力欄に打ち込まれた文字列を賭け金として解釈し、内部値へ反映する。
         /// </summary>
         private void UpdateBetAmountFromInput(string rawValue)
         {
@@ -260,7 +280,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 所持金が増減した際に賭け金を調整し、入力欄と同期を保つ。
+        /// 所持金が変動した際、賭け金が上限を超えていたら自動で丸め込む。
         /// </summary>
         private void OnPlayerMoneyChanged(int currentMoney)
         {
@@ -274,9 +294,7 @@ namespace Develop.Poker
             }
         }
 
-        /// <summary>
-        /// 所持金を上限として賭け金を丸め込むユーティリティ。
-        /// </summary>
+        /// <summary>所持金まで賭けられるよう、BetAmount を clamp するユーティリティ。</summary>
         private void ClampBetToAffordableAmount()
         {
             var max = GetMaxAffordableBet();
@@ -287,7 +305,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// 内部賭け金を更新し、必要なら InputField へ反映する。
+        /// ベット額を更新し、必要に応じて入力フィールドへ反映する。
         /// </summary>
         private void SetBetAmountInternal(int amount, bool updateInputField)
         {
@@ -300,7 +318,7 @@ namespace Develop.Poker
         }
 
         /// <summary>
-        /// InputField のテキストを現在の賭け金に合わせて更新。SetTextWithoutNotify でフィードバックループを防ぐ。
+        /// TMP_InputField へ現在の賭け金を反映。SetTextWithoutNotify でフィードバックループを防止。
         /// </summary>
         private void SyncBetInputToCurrentBet()
         {
@@ -316,15 +334,49 @@ namespace Develop.Poker
             }
         }
 
-        /// <summary>所持金が不明な場合は int.MaxValue を返し、賭け金制限をかけない。</summary>
+        /// <summary>PlayerData が存在しない場合は制限なし（int.MaxValue）として扱う。</summary>
         private int GetMaxAffordableBet() =>
             _playerData != null ? Mathf.Max(0, _playerData.Money.Value) : int.MaxValue;
 
-        /// <summary>入力された文字列を数値に変換し、負値を 0 扱いにする。</summary>
+        /// <summary>入力文字列を数値に変換し、負値は 0 として扱う。</summary>
         private static int ParseBetInput(string rawValue) =>
             int.TryParse(rawValue, out var parsed) ? Mathf.Max(0, parsed) : 0;
 
-        /// <summary>ResolveBattle の結果をまとめる小さな DTO。</summary>
+        /// <summary>プレイヤーの引き直し完了イベントを購読し、強制バトルを仕掛けるトリガーにする。</summary>
+        private void SubscribePlayerRedrawEvent()
+        {
+            if (_playerPresenter == null)
+            {
+                return;
+            }
+
+            _playerPresenter.RedrawPerformed -= HandlePlayerRedrawPerformed;     // 多重登録防止。
+            _playerPresenter.RedrawPerformed += HandlePlayerRedrawPerformed;
+        }
+
+        private void UnsubscribePlayerRedrawEvent()
+        {
+            if (_playerPresenter == null)
+            {
+                return;
+            }
+
+            _playerPresenter.RedrawPerformed -= HandlePlayerRedrawPerformed;
+        }
+
+        /// <summary>
+        /// プレイヤーが引き直しを行ったら即座にバトルを実行する（交換1回のみ&交換後強制バトルの仕様）。
+        /// </summary>
+        private void HandlePlayerRedrawPerformed(CardPresenter presenter)
+        {
+            if (presenter != _playerPresenter)
+            {
+                return;
+            }
+
+            ExecuteBattle();
+        }
+
         private readonly struct BattleSnapshot
         {
             public BattleSnapshot(PokerGameManager.BattleResult result, PokerRank playerRank, PokerRank enemyRank)

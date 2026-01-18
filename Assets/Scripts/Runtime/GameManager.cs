@@ -11,6 +11,7 @@ namespace Runtime
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private GamblingInitilizer _gamblingInitializer;
+        [SerializeField] private PokerInit _pokerInitializer;
         [SerializeField] private PlayerInitilizer _playerInitializer;
         [SerializeField] private int _initialMoney = 1000;
         private PlayerData _playerData;
@@ -22,6 +23,7 @@ namespace Runtime
             _saveInitializer = new SaveInitializer();
             _saveInitializer.Init(_playerData);
             _gamblingInitializer.GamblingInit(_playerData);
+            _pokerInitializer?.Init(_playerData);
             _playerInitializer.Init(_playerData);
             
         }
