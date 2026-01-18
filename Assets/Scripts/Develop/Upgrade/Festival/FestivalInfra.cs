@@ -1,7 +1,9 @@
+using Cysharp.Threading.Tasks;
+using Develop.Upgrade;
 using Develop.Upgrade.Festival;
 using Domain;
+using UniRx;
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// フェスティバル機能のUnityインフラ層。
@@ -17,9 +19,12 @@ public class FestivalInfra : MonoBehaviour
 
     private TimedEvent _timeEvent;
     private EventReward _eventReward;
+    private HarvestBus _hervestBus;
 
-    private void Start()
+    public void Init(HarvestBus harvestBus)
     {
+        _hervestBus = harvestBus;
+
         IClock clock = new SystemClock();
         IRandom random = new SystemRandom();
 
@@ -31,20 +36,28 @@ public class FestivalInfra : MonoBehaviour
         _timeEvent.OnStarted += _eventReward.OnEventStarted;
         _timeEvent.OnEnded += HandleEventEnded;
 
+        // 採取入力の登録
+        _hervestBus.OnHarvested.Subscribe(onNext: amount =>
+        {
+            _eventReward.OnHarvest();
+            _eventReward.AddCoffeeBeans(amount);
+        }).AddTo(this);
         Debug.Log("Festival System Init Complete");
+    }
+
+    /// <summary>
+    /// Upgradeからレベルを変更できるように
+    /// </summary>
+    /// <param name="level"></param>
+    public void SetFestivalLevel(int level)
+    {
+        _currentLevel = level;
     }
 
     private void Update()
     {
         // 時間の監視
         _timeEvent.Update();
-
-        // 採取入力の監視
-        if (Input.GetMouseButtonDown(0))
-        {
-            _eventReward.OnHarvest();
-            _eventReward.AddCoffeeBeans(1);
-        }
     }
 
     /// <summary>
@@ -53,6 +66,6 @@ public class FestivalInfra : MonoBehaviour
     private void HandleEventEnded()
     {
         _eventReward.ConfigureRanks(_currentLevel, _levelData);
-        _eventReward.OnEventEnded();   
+        _eventReward.OnEventEnded();
     }
 }
