@@ -13,6 +13,10 @@ namespace Develop.Upgrade
 
         public bool CanLevelUp => Level < MaxLevel;
 
+        /// <summary>
+        /// レベルを設定する。
+        /// </summary>
+        /// <param name="level"></param>
         public void SetLevel(int level)
         {
             // clamp（0〜MaxLevel）
