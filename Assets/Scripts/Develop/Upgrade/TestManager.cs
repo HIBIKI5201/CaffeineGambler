@@ -16,7 +16,7 @@ public class TestManager : MonoBehaviour
         _playerData = new PlayerData(1000);
 
         _moneyViwer.Bind(_playerData);
-        List<IUpgrade> upgrades = UpgradeFactory.Create(_playerData);
+        List<IUpgrade> upgrades = UpgradeFactory.Create();
         _shopManager.Init(_playerData,upgrades.ToArray());
         _autoProductionRunner.Init(_playerData, upgrades);
     }
