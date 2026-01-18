@@ -15,7 +15,7 @@ namespace Develop.Poker
         private void Awake()
         {
             _playerData = new PlayerData(Mathf.Max(0, _initialMoney));
-            _playerPresenter?.Init(_playerData);
+            //_playerPresenter?.Init(_playerData);
             _battlePresenter?.Initialize(_playerData);
         }
 
