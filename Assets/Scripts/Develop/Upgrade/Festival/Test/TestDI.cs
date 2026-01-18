@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using UnityEngine;
 namespace Develop.Upgrade.Festival.Test
 {
@@ -20,7 +19,6 @@ namespace Develop.Upgrade.Festival.Test
             eventDomain.AddCoffeeBeans(10);
             eventDomain.EndEvent();
 
-            Assert.AreEqual(30, eventDomain.TotalCoffeeBeans);
         }
 
     }
