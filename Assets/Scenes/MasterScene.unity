@@ -1490,17 +1490,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!114 &807480686 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 23652084927170888, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
-  m_PrefabInstance: {fileID: 1656575659}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &818723038 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8000157434340715482, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
@@ -1916,6 +1905,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1502541037}
   - {fileID: 374587347}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2761,7 +2751,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PokerInit
   _playerPresenter: {fileID: 699634526}
-  _playerViewer: {fileID: 1946173525}
+  _playerViewer: {fileID: 1502541040}
   _battlePresenter: {fileID: 1630818349}
 --- !u!1 &1502541036
 GameObject:
@@ -2789,16 +2779,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1502541036}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1827585692}
+  m_Father: {fileID: 930532307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -502, y: 413}
+  m_AnchoredPosition: {x: 509, y: 413}
   m_SizeDelta: {x: 300, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1502541038
@@ -2838,8 +2828,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190335
-  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
+    rgba: 4278255873
+  m_fontColor: {r: 0.0037735105, g: 0.0037735105, b: 0.0037735105, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3457,6 +3447,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3787649597866680958, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 664.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3787649597866680958, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -3720,6 +3714,22 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 480
       objectReference: {fileID: 0}
+    - target: {fileID: 7711603887592340702, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
+      propertyPath: m_Spacing
+      value: -321.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711603887592340702, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
+      propertyPath: m_ChildAlignment
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711603887592340702, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711603887592340702, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 7869273194368994409, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -3753,7 +3763,8 @@ PrefabInstance:
       value: ToggleCardSelection
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6632707045031370073, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a417f03e3afae7f40937bb44ea47f157, type: 3}
@@ -3954,7 +3965,6 @@ RectTransform:
   - {fileID: 1559946254}
   - {fileID: 367294767}
   - {fileID: 924538436}
-  - {fileID: 1502541037}
   - {fileID: 1401078831}
   - {fileID: 921268281}
   - {fileID: 458937213}
@@ -4340,7 +4350,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1946173524}
-  - component: {fileID: 1946173525}
   m_Layer: 0
   m_Name: Viewer
   m_TagString: Untagged
@@ -4365,19 +4374,6 @@ Transform:
   - {fileID: 2091689048}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1946173525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1946173523}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c930b2452ade1a4981532f26feb3531, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Develop.Player.PlayerViewer
-  _moneyText: {fileID: 807480686}
 --- !u!1 &1957847211
 GameObject:
   m_ObjectHideFlags: 0
