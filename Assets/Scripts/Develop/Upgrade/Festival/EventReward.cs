@@ -1,7 +1,6 @@
-
-
-
 using Develop.Upgrade.Festival;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain
 {
@@ -10,43 +9,53 @@ namespace Domain
     /// </summary>
     public class EventReward
     {
-
-        public int TotalCoffeeBeans { get; private set; }
-
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public EventReward(
-            TimedEvent timedEvent,
-            int threshold,
-            int multiplier)
+        public EventReward(TimedEvent timedEvent)
         {
             _timedEvent = timedEvent;
-           Init(threshold, multiplier);
         }
 
         /// <summary>
-        ///     最低クリック数と倍率を設定する。
+        /// 獲得したコーヒー豆の総数。
         /// </summary>
-        public void Init(int threshold, int multiplier)
+        public int TotalCoffeeBeans { get; private set; }
+
+        /// <summary>
+        /// 現在のレベルに応じた報酬ランクを設定する。
+        /// </summary>
+        public void ConfigureRanks(int currentLevel, RewardRankSO so)
         {
-            _threshold = threshold;
-            _multiplier = multiplier;
+            _ranks.Clear();
+
+            // レベル2未満の場合はボーナス機能自体が無効
+            if (currentLevel < 2)
+            {
+                return;
+            }
+
+            // 到達可能なすべてのレベルの条件を登録
+            foreach (var setting in so.list)
+            {
+                if (setting.Level <= currentLevel)
+                {
+                    _ranks.Add(setting);
+                }
+            }
         }
 
         /// <summary>
-        /// イベント開始時の処理。
-        /// カウンターや報酬をリセットする。
+        /// イベント開始時のリセット。
         /// </summary>
         public void OnEventStarted()
         {
             _counter = 0;
             _eventCoffeeBeans = 0;
-            TotalCoffeeBeans = 0;
         }
 
         /// <summary>
-        /// 採取が行われた事実を通知する。
+        /// 採取カウント。
         /// </summary>
         public void OnHarvest()
         {
@@ -59,7 +68,7 @@ namespace Domain
         }
 
         /// <summary>
-        /// コーヒー豆を取得した事実を通知する。
+        /// コーヒー豆の加算。
         /// </summary>
         public void AddCoffeeBeans(int amount)
         {
@@ -73,24 +82,31 @@ namespace Domain
         }
 
         /// <summary>
-        /// イベント終了時の報酬確定処理。
+        /// イベント終了時の追加報酬精算。
         /// </summary>
         public void OnEventEnded()
         {
             if (!_timedEvent.IsActive)
             {
-                if (_counter >= _threshold)
+                // 達成している中で最大の閾値を持つランクを取得
+                var applicableRank = _ranks
+                    .Where(r => _counter >= r.Threshold)
+                    .OrderByDescending(r => r.Threshold)
+                    .FirstOrDefault();
+
+                if (applicableRank != null)
                 {
-                    TotalCoffeeBeans +=
-                        _eventCoffeeBeans * (_multiplier - 1);
+                    // (Multiplier - 1) 倍を追加で取得する
+                    TotalCoffeeBeans += _eventCoffeeBeans * (applicableRank.Multiplier - 1);
                 }
+
+                _counter = 0;
+                _eventCoffeeBeans = 0;
             }
         }
 
         private readonly TimedEvent _timedEvent;
-        private int _threshold; // m
-        private int _multiplier; // n 
-
+        private List<Develop.Upgrade.Festival.RewardRank> _ranks = new List<Develop.Upgrade.Festival.RewardRank>();
         private int _counter;
         private int _eventCoffeeBeans;
     }
