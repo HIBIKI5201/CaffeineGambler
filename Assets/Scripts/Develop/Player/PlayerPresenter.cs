@@ -14,7 +14,7 @@ namespace Develop.Player
     {
         [SerializeField] private PlayerViewer _playerViewer;     // 所持金表示を担当するビュー。
         [SerializeField] private float _baseAmount;              // アップグレード適用前の基本獲得量。
-
+        [SerializeField] private ClickVFXController _clickVfx;
         private CompositeDisposable _disposables;               // 購読の一括破棄用。
         private PlayerData _playerData;                         // 所持金などプレイヤー状態の実体。
         private CollectionCalculation _collectionCalculationPresenter; // 各種修飾子を合算する計算器。
@@ -49,6 +49,7 @@ namespace Develop.Player
         {
             var amount = _collectionCalculationPresenter.ApplyModifiers(_baseAmount);
             _playerData.AddMoney(Mathf.FloorToInt(amount));
+            _clickVfx.Play(eventData.position);
         }
 
         /// <summary>
@@ -62,6 +63,7 @@ namespace Develop.Player
             }
 
             _isPointerHeld = true;
+            _clickVfx.Play(eventData.position);
         }
 
         /// <summary>

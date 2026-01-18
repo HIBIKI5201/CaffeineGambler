@@ -1,16 +1,14 @@
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ClickVFXController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private VisualEffect vfx;
 
-    // Update is called once per frame
-    void Update()
+    public void Play(Vector2 screenPosition)
     {
-        
+        Vector3 pos = new Vector3(screenPosition.x, screenPosition.y, 0f);
+        vfx.SetVector3("ClickPosition", pos);
+        vfx.Play();
     }
 }
