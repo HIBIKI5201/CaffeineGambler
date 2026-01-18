@@ -13,7 +13,7 @@ namespace Develop.Upgrade
         /// </summary>
         /// <param name="playerData"></param>
         /// <returns></returns>
-        public static List<IUpgrade> Create()
+        public static List<IUpgrade> Create(FestivalInfra festivalInfra)
         {
             // ここでアップグレードのインスタンスを生成し、リストに追加する。
             // 強化処理を実装したクラスをここで生成するようにしてください。
@@ -22,7 +22,8 @@ namespace Develop.Upgrade
                 new ClickPowerUpgrade(),
                 new AutoProductionUpgrade(),
                 new LuckyCollectUpgrade(),
-                new ChargeCollectUpgrade()
+                new ChargeCollectUpgrade(),
+                new FestivalUpgrade(festivalInfra)
             };
             return upgrades;
         }

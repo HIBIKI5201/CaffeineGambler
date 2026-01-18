@@ -1,3 +1,4 @@
+using Develop.Player;
 using Develop.Upgrade.Festival;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,10 @@ namespace Domain
         /// <summary>
         /// コンストラクタ。
         /// </summary>
-        public EventReward(TimedEvent timedEvent)
+        public EventReward(TimedEvent timedEvent, PlayerData playerData)
         {
             _timedEvent = timedEvent;
+            _playerData = playerData;
         }
 
         /// <summary>
@@ -29,8 +31,8 @@ namespace Domain
         {
             _ranks.Clear();
 
-            // レベル2未満の場合はボーナス機能自体が無効
-            if (currentLevel < 2)
+            // レベル1未満の場合はボーナス機能自体が無効
+            if (currentLevel < 1)
             {
                 return;
             }
@@ -78,7 +80,7 @@ namespace Domain
             }
 
             _eventCoffeeBeans += amount;
-            TotalCoffeeBeans += amount;
+            //TotalCoffeeBeans += amount;
         }
 
         /// <summary>
@@ -97,11 +99,13 @@ namespace Domain
                 if (applicableRank != null)
                 {
                     // (Multiplier - 1) 倍を追加で取得する
-                    TotalCoffeeBeans += _eventCoffeeBeans * (applicableRank.Multiplier - 1);
+                    TotalCoffeeBeans += (int)(_eventCoffeeBeans * (applicableRank.Multiplier - 1));
+                    _playerData.AddMoney(TotalCoffeeBeans);
                 }
 
                 _counter = 0;
                 _eventCoffeeBeans = 0;
+                TotalCoffeeBeans = 0;
             }
         }
 
@@ -109,5 +113,6 @@ namespace Domain
         private List<Develop.Upgrade.Festival.RewardRank> _ranks = new List<Develop.Upgrade.Festival.RewardRank>();
         private int _counter;
         private int _eventCoffeeBeans;
+        private PlayerData _playerData;
     }
 }

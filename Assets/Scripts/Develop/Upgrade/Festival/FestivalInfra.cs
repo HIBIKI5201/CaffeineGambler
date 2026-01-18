@@ -1,7 +1,10 @@
+using Cysharp.Threading.Tasks;
+using Develop.Player;
+using Develop.Upgrade;
 using Develop.Upgrade.Festival;
 using Domain;
+using UniRx;
 using UnityEngine;
-using System.Collections.Generic;
 
 /// <summary>
 /// フェスティバル機能のUnityインフラ層。
@@ -17,34 +20,51 @@ public class FestivalInfra : MonoBehaviour
 
     private TimedEvent _timeEvent;
     private EventReward _eventReward;
+    private HarvestBus _hervestBus;
+    private PlayerData _playerData;
 
-    private void Start()
+    public void Init(HarvestBus harvestBus,PlayerData playerData)
     {
+        _hervestBus = harvestBus;
+        _playerData = playerData;
+
         IClock clock = new SystemClock();
         IRandom random = new SystemRandom();
 
         // オブジェクトの構築
         _timeEvent = new TimedEvent(clock, random, _eventDuration);
-        _eventReward = new EventReward(_timeEvent);
+        _eventReward = new EventReward(_timeEvent,_playerData);
 
         // イベント購読によるライフサイクル管理
         _timeEvent.OnStarted += _eventReward.OnEventStarted;
         _timeEvent.OnEnded += HandleEventEnded;
 
+        // 採取入力の登録
+        _hervestBus.OnHarvested.Subscribe(onNext: amount =>
+        {
+            _eventReward.OnHarvest();
+            _eventReward.AddCoffeeBeans(amount);
+            Debug.Log("押された");
+        }).AddTo(this);
         Debug.Log("Festival System Init Complete");
+    }
+
+    /// <summary>
+    /// Upgradeからレベルを変更できるように
+    /// </summary>
+    /// <param name="level"></param>
+    public void SetFestivalLevel(int level)
+    {
+        _currentLevel = level;
     }
 
     private void Update()
     {
+        if(_timeEvent == null) return;
         // 時間の監視
         _timeEvent.Update();
 
-        // 採取入力の監視
-        if (Input.GetMouseButtonDown(0))
-        {
-            _eventReward.OnHarvest();
-            _eventReward.AddCoffeeBeans(1);
-        }
+        Debug.Log(_timeEvent.IsActive);
     }
 
     /// <summary>
@@ -52,7 +72,8 @@ public class FestivalInfra : MonoBehaviour
     /// </summary>
     private void HandleEventEnded()
     {
+        Debug.Log(_eventReward.TotalCoffeeBeans);
         _eventReward.ConfigureRanks(_currentLevel, _levelData);
-        _eventReward.OnEventEnded();   
+        _eventReward.OnEventEnded();
     }
 }
