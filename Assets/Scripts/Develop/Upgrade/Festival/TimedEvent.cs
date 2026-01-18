@@ -2,10 +2,11 @@ using System;
 
 namespace Develop.Upgrade.Festival
 {
-     public class TimedEvent
+    public class TimedEvent
     {
-
-        public TimedEvent(IClock clock, IRandom random,int eventTime)
+        public event Action OnStarted;
+        public event Action OnEnded;
+        public TimedEvent(IClock clock, IRandom random, int eventTime)
         {
             this._clock = clock;
             this._random = random;
@@ -32,11 +33,13 @@ namespace Develop.Upgrade.Festival
         {
             IsActive = true;
             _endTime = _clock.Now + _eventTime;
+            OnStarted?.Invoke();
         }
         private void EventEnd()
         {
             IsActive = false;
             ScheduleNextStart();
+            OnEnded?.Invoke();
         }
 
         private void ScheduleNextStart()
