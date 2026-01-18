@@ -17,19 +17,24 @@ namespace Runtime
         [SerializeField] private PokerInit _pokerInitializer;
         [SerializeField] private PlayerInitilizer _playerInitializer;
         [SerializeField] private UpgradeInitializer _upgradeInitializer;
+        [SerializeField] private FestivalInfra _festivalInfra;
         [SerializeField] private int _initialMoney = 1000;
         private PlayerData _playerData;
         private List<IUpgrade> _upgrades;
         private SaveInitializer _saveInitializer;
+        private HarvestBus _hervestBus;
         private void Awake()
         {
             _playerData = new PlayerData(_initialMoney); // 初期所持金1000でプレイヤーデータを作成
-            _upgrades = UpgradeFactory.Create();
+            _upgrades = UpgradeFactory.Create(_festivalInfra);
+            _hervestBus = new HarvestBus();
+
             // ギャンブルシステムの初期化を実行
             _saveInitializer = new SaveInitializer();
             _saveInitializer.Init(_playerData,_upgrades);
 
-            _playerInitializer.Init(_playerData, _upgrades);
+            _festivalInfra.Init(_hervestBus,_playerData);
+            _playerInitializer.Init(_playerData, _upgrades,_hervestBus);
             _upgradeInitializer.Init(_playerData, _upgrades);
             _gamblingInitializer.GamblingInit(_playerData);
             _pokerInitializer?.Init(_playerData);

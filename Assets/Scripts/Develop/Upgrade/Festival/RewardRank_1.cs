@@ -1,7 +1,8 @@
 using UnityEngine;
 namespace Develop.Upgrade.Festival
 {
-    public class RewardRank : MonoBehaviour
+    [System.Serializable]
+    public class RewardRank 
     {
         /// <summary>
         /// 強化レベル。
@@ -16,6 +17,6 @@ namespace Develop.Upgrade.Festival
         /// <summary>
         /// 適用される報酬倍率（n）。
         /// </summary>
-        public int Multiplier;
+        public float Multiplier;
     }
 }
