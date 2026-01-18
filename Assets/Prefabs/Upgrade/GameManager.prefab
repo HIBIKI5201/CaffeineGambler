@@ -1,0 +1,236 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &39143547079931610
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1148289922685601113}
+  - component: {fileID: 1442218144030583294}
+  - component: {fileID: 3481283984272402120}
+  m_Layer: 0
+  m_Name: ShopManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1148289922685601113
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39143547079931610}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -31.31012, y: 581.8839, z: 214.00601}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4160420016518478001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1442218144030583294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39143547079931610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c014ab2970087894584c8569d605ae49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Upgrade.ShopManager
+  _contentRoot: {fileID: 0}
+  _shopItemViewPrefab: {fileID: 6299340498715014940, guid: 15e083b447855434892f9336f97fb052, type: 3}
+--- !u!114 &3481283984272402120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 39143547079931610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7451dd6a91d38ff40a5b31b81cb4e8e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Upgrade.ShopUIController
+  _shopPanel: {fileID: 0}
+  _animationDuration: 1
+  _animationEase: 30
+--- !u!1 &8115086851690869435
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4160420016518478001}
+  - component: {fileID: 6177649562782102637}
+  - component: {fileID: 2856865339820669974}
+  - component: {fileID: 7623244290346643202}
+  - component: {fileID: 5905108765132303686}
+  - component: {fileID: 1231932757476578190}
+  - component: {fileID: 1512517902265925440}
+  - component: {fileID: 7823920490852080452}
+  - component: {fileID: 3494314951828567327}
+  - component: {fileID: 1187724862669469000}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4160420016518478001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 504.58804, y: -0, z: -214.00601}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1148289922685601113}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6177649562782102637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c5c65a16bd19c94792b64f9f4c7d5ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Gambling.CardPlacementController
+  _dealerCardOrigin: {fileID: 0}
+  _playerHandContainer: {fileID: 0}
+  _dealerHandContainer: {fileID: 0}
+--- !u!114 &2856865339820669974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6dd4debb5e9c764c98e238c92084335, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.GameManager
+  _gamblingInitializer: {fileID: 7623244290346643202}
+  _pokerInitializer: {fileID: 1512517902265925440}
+  _playerInitializer: {fileID: 5905108765132303686}
+  _upgradeInitializer: {fileID: 7823920490852080452}
+  _festivalInfra: {fileID: 1187724862669469000}
+  _initialMoney: 1000
+--- !u!114 &7623244290346643202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8ba05183a8259c4cb6bc2b7a69ffeb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Gambling.GamblingInitilizer
+  _blackJackSettings: {fileID: 11400000, guid: 8a00770689f4eee4294fc4cd4ceabff6, type: 2}
+  _economySettings: {fileID: 11400000, guid: 73a1770e433757e46bfc378e5aa80e25, type: 2}
+  _uiPresenter: {fileID: 0}
+  _dealerPresenter: {fileID: 0}
+--- !u!114 &5905108765132303686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c63425d6a1c6ef4d8ba65ccd8e89504, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInitilizer
+  _playerPresenter: {fileID: 0}
+--- !u!114 &1231932757476578190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea0ce2217fd07b24b9d4933221f7a7dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Poker.PokerGameManager
+  _includeJoker: 0
+  _handSize: 5
+--- !u!114 &1512517902265925440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6eff7c372fa30fb4dba722de48f329c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PokerInit
+  _playerViewer: {fileID: 0}
+  _battlePresenter: {fileID: 0}
+--- !u!114 &7823920490852080452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69658aee37d89e94f92cfd805414e37f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Runtime.Upgrade.UpgradeInitializer
+  _shopManager: {fileID: 1442218144030583294}
+  _autoProductionRunner: {fileID: 3494314951828567327}
+--- !u!114 &3494314951828567327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb14f817bf49fa448b35af0a23f18489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Develop.Upgrade.AutoProductionRunner
+--- !u!114 &1187724862669469000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8115086851690869435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dbe3301462840aa47b1ea4f78a54d205, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FestivalInfra
+  _eventDuration: 20
+  _levelData: {fileID: 11400000, guid: bcd3378deb21072478b92aacbcd27ad6, type: 2}
+  _currentLevel: 0
