@@ -13,6 +13,21 @@ namespace Develop.Upgrade
 
         public bool CanLevelUp => Level < MaxLevel;
 
+        /// <summary>
+        /// レベルを設定する。
+        /// </summary>
+        /// <param name="level"></param>
+        public void SetLevel(int level)
+        {
+            // clamp（0〜MaxLevel）
+            if (level < 0) level = 0;
+            if (level > MaxLevel) level = MaxLevel;
+
+            this.Level = level; 
+
+            HandleLevelChanged();
+        }
+
         public virtual void ApplyUpgrade()
         {
             if (CanLevelUp)
@@ -22,5 +37,10 @@ namespace Develop.Upgrade
         }
 
         public abstract int GetCost();
+
+        /// <summary>
+        /// レベル変更後に内部状態を同期させるためのメソッド
+        /// </summary>
+        protected virtual void HandleLevelChanged() { }
     }
 }

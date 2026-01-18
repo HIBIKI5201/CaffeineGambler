@@ -24,11 +24,11 @@ namespace Runtime
         private void Awake()
         {
             _playerData = new PlayerData(_initialMoney); // 初期所持金1000でプレイヤーデータを作成
+            _upgrades = UpgradeFactory.Create();
             // ギャンブルシステムの初期化を実行
             _saveInitializer = new SaveInitializer();
-            _saveInitializer.Init(_playerData);
+            _saveInitializer.Init(_playerData,_upgrades);
 
-            _upgrades = UpgradeFactory.Create();
             _playerInitializer.Init(_playerData, _upgrades);
             _upgradeInitializer.Init(_playerData, _upgrades);
             _gamblingInitializer.GamblingInit(_playerData);
@@ -36,7 +36,7 @@ namespace Runtime
         }
         private void OnApplicationQuit()
         {
-           _saveInitializer.Save(_playerData);
+           _saveInitializer.Save(_playerData,_upgrades);
         }
     }
 }
