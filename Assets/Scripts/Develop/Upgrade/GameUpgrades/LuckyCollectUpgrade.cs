@@ -47,6 +47,11 @@ namespace Develop.Upgrade
             return value;
         }
 
+        protected override void HandleLevelChanged()
+        {
+            UpdateParameter(Level);
+        }
+
         /// <summary>
         /// レベルに応じたパラメータを更新する。
         /// </summary>
