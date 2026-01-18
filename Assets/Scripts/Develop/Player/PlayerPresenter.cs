@@ -12,12 +12,13 @@ namespace Develop.Player
         private CompositeDisposable _disposables;
         private PlayerData _playerData;
         private CollectionCalculation _collectionCalculationPresenter;
+        private HarvestBus _harvestBus;
         [SerializeField]
         private PlayerViewer _playerViewer;
         [SerializeField]
         private float _baseAmount;
 
-        public void Init(PlayerData playerData,List<IUpgrade> upgrades)
+        public void Init(PlayerData playerData,List<IUpgrade> upgrades,HarvestBus harvestBus)
         {
             _disposables = new CompositeDisposable();
             _playerData = playerData;
@@ -33,8 +34,10 @@ namespace Develop.Player
         public void OnPointerClick(PointerEventData eventData)
         {
             float amount = _collectionCalculationPresenter.ApplyModifiers(_baseAmount);
+            int result = Mathf.FloorToInt(amount);
 
-            _playerData.AddMoney(Mathf.FloorToInt(amount));
+            _playerData.AddMoney(result);
+            _harvestBus?.OnHarvested.OnNext(result);
         }
 
         private void OnDestroy()
